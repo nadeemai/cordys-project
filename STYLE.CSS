@@ -1,0 +1,21 @@
+.custom-scope .sapMBarPH.sapMBarContainer {
+  background-color: #E31837 !important;
+  justify-content: center;
+}
+
+.sapMIBar-CTX .sapMTitle {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+/* .sapFDynamicPageTitle {
+  background-color: #E31837 !important;
+  justify-content: center;
+} */
+/* .sapFDynamicPage-Std-Desktop .sapFDynamicPageHeader.sapFDynamicPageHeaderWithContent {
+    padding: 0rem 2rem;
+} */
+
+.sapFDynamicPage-Std-Desktop .sapFDynamicPageHeader.sapFDynamicPageHeaderWithContent {
+  padding: 0rem 2rem !important;
+}
