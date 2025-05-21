@@ -115,9 +115,12 @@ span#application-app-preview-component---cordys--inputRefNumber {
 section.sapContrastPlus.sapFDynamicPageHeader.sapFDynamicPageHeaderWithContent.sapFDynamicPageHeaderPinnable {
   background-color: #f5f5f5;
 }
+.shiftLeft {
+  margin-left: -0.5rem; /* Increased for a slightly more noticeable left shift */
+}
 
 
-
+old code
 .customhead {
   width: 100%;
   justify-content: space-between;
