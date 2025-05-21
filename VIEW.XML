@@ -56,8 +56,8 @@ UPDATE CODE 2
             adjustLabelSpan="false"
             class="sapUiSmallMarginBeginEnd">
             <form:content>
-              <Label id="Location" text="{i18n>Location}"/>
-              <ComboBox id="comboLocation" width="150%" selectedKey="ENV" placeholder="Select Location" required="true">
+              <Label id="Location" text="{i18n>Location}" required="true"/>
+              <ComboBox id="comboLocation" width="150%" selectedKey="ENV" placeholder="Select Location">
                 <items>
                   <core:Item id="Dropdown_ENV" text="ENV" key="ENV"/>
                   <core:Item id="Dropdown_" text="Other" key="Other"/>
@@ -166,11 +166,6 @@ UPDATE CODE 2
                     </ColumnListItem>
                   </items>
                 </Table>
-                <!-- <Text id="_IDGenText10" text="All values in ₹ Lacs." class="sapUiTinyMarginTop" wrapping="true">
-                  <customData>
-                    <core:CustomData key="style" value="color: red;" writeToDom="true"/>
-                  </customData>
-                </Text> -->
               </VBox>
             </uxap:ObjectPageSubSection>
           </uxap:subSections>
@@ -203,14 +198,16 @@ UPDATE CODE 2
                   <columns>
                     <Column id="_IDGenColumn4"><Text id="_IDGenText11" text="ID"/></Column>
                     <Column id="_IDGenColumn5"><Text id="_IDGenText12" text="File Name"/></Column>
-                    <Column id="_IDGenColumn8" hAlign="End" width="9rem"><Text id="_IDGenText16" text="Action"/></Column>
+                    <Column id="_IDGenColumn8"  width="9rem">
+                      <Text id="_IDGenText16" text="Action"/>
+                    </Column>
                   </columns>
                   <items>
                     <ColumnListItem id="_IDGenColumnListItem1">
                       <cells>
                         <Text id="_IDGenText17" text="{UploadDocSrvTabData>ID}"/>
                         <Text id="_IDGenText13" text="{UploadDocSrvTabData>fileName}"/>
-                        <HBox id="_IDGenHBox5" justifyContent="End" width="100%">
+                        <HBox id="_IDGenHBox5" justifyContent="Start" width="100%">
                           <Button id="_IDGenButton" icon="sap-icon://download" press="onDownloadTabAttachemnt" class="sapUiSmallMarginEnd">
                             <customData>
                               <core:CustomData key="fileName" value="{UploadDocSrvTabData>fileName}"/>
@@ -228,11 +225,6 @@ UPDATE CODE 2
                     </ColumnListItem>
                   </items>
                 </Table>
-                <!-- <Text id="_IDGenTextAttachmentNote" text="All values in ₹ Lacs." class="sapUiTinyMarginTop" wrapping="true">
-                  <customData>
-                    <core:CustomData key="style" value="color: red;" writeToDom="true"/>
-                  </customData>
-                </Text> -->
               </VBox>
             </uxap:ObjectPageSubSection>
           </uxap:subSections>
@@ -241,6 +233,8 @@ UPDATE CODE 2
     </uxap:ObjectPageLayout>
   </Page>
 </mvc:View>
+
+
 
 UPDATE CODE
 
