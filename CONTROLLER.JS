@@ -39,7 +39,7 @@ sap.ui.define([
             if (!this._oSaveDialog) {
                 Fragment.load({
                     id: this.getView().getId(),
-                    name: "com.cordys.cordys.view.fragments.SaveDialog",
+                    name: "com.cordys.cordys.view.SaveDialog",
                     controller: this
                 }).then(function(oDialog) {
                     this._oSaveDialog = oDialog;
@@ -54,19 +54,15 @@ sap.ui.define([
         onConfirmSave: function() {
             var oView = this.getView();
             var oFormData = {
-                referenceNumber: oView.byId("inputRefNumber").getValue(),
+                referenceNumber: oView.byId("inputRefNumber").getText(), // Use getText() since it's a Text element
                 location: oView.byId("comboLocation").getSelectedKey(),
                 budget: oView.byId("inputBudget").getValue(),
-                implementDate: oView.byId("dateImplement").getValue(),
-                division: oView.byId("Division").getSelectedKey(),
                 projectName: oView.byId("inputProjectName").getValue(),
                 irr: oView.byId("inputIRR").getValue(),
-                department: oView.byId("Department").getSelectedKey(),
                 itemRequired: oView.byId("inputItemRequired").getValue(),
                 market: oView.byId("comboMarket").getSelectedKey(),
-                hod: oView.byId("Hod").getSelectedKey(),
                 date: oView.byId("dateField").getValue(),
-                hour: oView.byId("inputHour").getValue(),
+                engineeringHours: oView.byId("inputHour").getValue(),
                 background: oView.byId("_IDGenTextArea").getValue(),
                 justification: oView.byId("_IDGenTextArea1").getValue(),
                 expectedOutcome: oView.byId("_IDGenTextArea2").getValue(),
@@ -84,30 +80,38 @@ sap.ui.define([
 
         onSubmitPress: function() {
             var oView = this.getView();
-            var sRefNumber = oView.byId("inputRefNumber").getValue();
+            var sRefNumber = oView.byId("inputRefNumber").getText(); // Use getText() since it's a Text element
+            var sProjectName = oView.byId("inputProjectName").getValue();
+            var sItemRequired = oView.byId("inputItemRequired").getValue();
+
+            // Basic validation
             if (!sRefNumber) {
                 MessageToast.show("Reference Number is required!");
                 return;
             }
+            if (!sProjectName) {
+                MessageToast.show("Project Name is required!");
+                return;
+            }
+            if (!sItemRequired) {
+                MessageToast.show("Item Required is required!");
+                return;
+            }
 
             var oSubmitData = {
-                referenceNumber: sRefNumber,
-                location: oView.byId("comboLocation").getSelectedKey(),
-                budget: oView.byId("inputBudget").getValue(),
-                implementDate: oView.byId("dateImplement").getValue(),
-                division: oView.byId("Division").getSelectedKey(),
-                projectName: oView.byId("inputProjectName").getValue(),
-                irr: oView.byId("inputIRR").getValue(),
-                department: oView.byId("Department").getSelectedKey(),
-                itemRequired: oView.byId("inputItemRequired").getValue(),
-                market: oView.byId("comboMarket").getSelectedKey(),
-                hod: oView.byId("Hod").getSelectedKey(),
-                date: oView.byId("dateField").getValue(),
-                hour: oView.byId("inputHour").getValue(),
-                background: oView.byId("_IDGenTextArea").getValue(),
-                justification: oView.byId("_IDGenTextArea1").getValue(),
-                expectedOutcome: oView.byId("_IDGenTextArea2").getValue(),
-                attachments: this.getView().getModel("UploadDocSrvTabData").getProperty("/attachments")
+                // referenceNumber: sRefNumber,
+                // location: oView.byId("comboLocation").getSelectedKey(),
+                // budget: oView.byId("inputBudget").getValue(),
+                // projectName: sProjectName,
+                // irr: oView.byId("inputIRR").getValue(),
+                // itemRequired: sItemRequired,
+                // market: oView.byId("comboMarket").getSelectedKey(),
+                // date: oView.byId("dateField").getValue(),
+                // engineeringHours: oView.byId("inputHour").getValue(),
+                // background: oView.byId("_IDGenTextArea").getValue(),
+                // justification: oView.byId("_IDGenTextArea1").getValue(),
+                // expectedOutcome: oView.byId("_IDGenTextArea2").getValue(),
+                // attachments: this.getView().getModel("UploadDocSrvTabData").getProperty("/attachments")
             };
             MessageToast.show("Form submitted successfully: " + JSON.stringify(oSubmitData));
             // Add actual submit logic (e.g., OData service call) here
@@ -185,54 +189,6 @@ sap.ui.define([
             }
         },
 
-        onUploadPress: function() {
-            var oFileUploader = this.byId("fileUploaderTabAttchment");
-            var aFiles = oFileUploader.getDomRef().files;
-
-            if (!aFiles || aFiles.length === 0) {
-                MessageToast.show("Please select at least one file first.");
-                return;
-            }
-
-            var oModel = this.getView().getModel("UploadDocSrvTabData");
-            var aAttachments = oModel.getProperty("/attachments") || [];
-            var sUploadedOn = new Date().toISOString().split("T")[0];
-            var that = this;
-
-            // Clear previous temporary selections
-            aAttachments = aAttachments.filter(function(item) {
-                return !item.temp;
-            });
-
-            for (var i = 0; i < aFiles.length; i++) {
-                (function(file, index) {
-                    var oReader = new FileReader();
-                    oReader.onload = function(e) {
-                        var sBase64Data = e.target.result;
-                        aAttachments.push({
-                            ID: new Date().getTime().toString() + index,
-                            fileName: file.name,
-                            uploadedBy: "Current User",
-                            uploadedOn: sUploadedOn,
-                            deleteTabVisible: true,
-                            fileContent: sBase64Data
-                        });
-
-                        if (index === aFiles.length - 1) {
-                            oModel.setProperty("/attachments", aAttachments);
-                            oModel.refresh(true); // Force refresh to update bindings
-                            MessageToast.show("Uploaded " + aFiles.length + " file(s) successfully!");
-                            oFileUploader.setValue("");
-                        }
-                    };
-                    oReader.onerror = function() {
-                        MessageToast.show("Error reading file: " + file.name);
-                    };
-                    oReader.readAsDataURL(file);
-                })(aFiles[i], i);
-            }
-        },
-
         onDownloadTabAttachemnt: function(oEvent) {
             var oButton = oEvent.getSource();
             var sID = oButton.getCustomData().find(function(oData) {
@@ -302,6 +258,8 @@ sap.ui.define([
         }
     });
 });
+
+OLD CODE
 
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
