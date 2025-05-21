@@ -16,8 +16,13 @@ UPDATE CODE
       <uxap:headerTitle>
         <uxap:ObjectPageDynamicHeaderTitle id="ObjectPageDynamicHeaderTitle">
           <uxap:actions>
+          <HBox>
+              <Text id="inputRefNumber" text="Reference Number : FY-2024-3850" width="100%" />
+          </HBox>
+           <HBox>
             <Button id="btnSaveHeader" text="Save" icon="sap-icon://save" type="Accept" press="onSavePress"/>
             <Button id="btnSubmitHeader" text="Submit" icon="sap-icon://accept" type="Accept" press="onSubmitPress"/>
+          </HBox>
           </uxap:actions>
         </uxap:ObjectPageDynamicHeaderTitle>
       </uxap:headerTitle>
@@ -27,7 +32,7 @@ UPDATE CODE
           <form:SimpleForm
             id="SSimpleFormToolbar3"
             editable="true"
-            layout="ResponsiveGridLayout"
+            layout="ColumnLayout"
             labelSpanXL="12"
             labelSpanL="12"
             labelSpanM="12"
@@ -37,20 +42,19 @@ UPDATE CODE
             adjustLabelSpan="false"
             class="sapUiSmallMarginBeginEnd">
             <form:content>
-              <Label id="_IDGenLabel" text="{i18n>Reference Number}" class="noBoldLabel"/>
-              <Input id="inputRefNumber" value="FY-2024-3850" width="100%" editable="false"/>
+              <!-- <core:Title id="_IDGenTitle22" class="noBoldLabel"/> -->
               <Label id="_IDGenLabel1" text="{i18n>Location}"/>
-              <ComboBox id="comboLocation" width="100%" selectedKey="ENV">
+              <ComboBox id="comboLocation" width="150%" selectedKey="ENV">
                 <items>
                   <core:Item id="_IDGenItem" text="ENV" key="ENV"/>
                   <core:Item id="_IDGenItem1" text="Other" key="Other"/>
                 </items>
               </ComboBox>
               <Label id="_IDGenLabel2" text="{i18n>Budget Requirment}" class="noBoldLabel"/>
-              <Input id="inputBudget" value="2000" width="100%" type="Number" editable="false"/>
+              <Input id="inputBudget" value="2000" width="150%" type="Number" editable="false"/>
               <Label id="_IDGenLabel3" text="{i18n>Implement Date}"/>
               <DatePicker id="dateImplement" value="2024-10-18" displayFormat="dd/MM/yyyy" valueFormat="yyyy-MM-dd" width="100%"/>
-              <core:Title id="_IDGenTitle2" class="noBoldLabel"/>
+    
               <Label id="_IDGenLabel35" text="{i18n>Division}" class="noBoldLabel"/>
               <ComboBox id="Division" width="100%" selectedKey="FD" editable="false">
                 <items>
@@ -62,7 +66,7 @@ UPDATE CODE
               <Input id="inputProjectName" value="TEST 123" width="100%"/>
               <Label id="_IDGenLabel6" text="{i18n>IRR}"/>
               <Input id="inputIRR" value="1234" width="100%" type="Number"/>
-              <core:Title id="_IDGenTitle3" class="noBoldLabel"/>
+              <!-- <core:Title id="_IDGenTitle3" class="noBoldLabel"/> -->
               <Label id="_IDGenLabelDepartment" text="{i18n>Department}" class="noBoldLabel"/>
               <ComboBox id="Department" width="100%" selectedKey="FD CDMM">
                 <items>
@@ -79,7 +83,7 @@ UPDATE CODE
                   <core:Item id="_IDGenItem7" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <core:Title id="_IDGenTitle4" class="noBoldLabel"/>
+              <!-- <core:Title id="_IDGenTitle4" class="noBoldLabel"/> -->
               <Label id="_IDGenLabelHod" text="{i18n>Hod}" class="noBoldLabel"/>
               <ComboBox id="Hod" width="100%" selectedKey="50914">
                 <items>
@@ -89,7 +93,7 @@ UPDATE CODE
               </ComboBox>
               <Label id="_IDGenLabel11" text="{i18n>Date}"/>
               <DatePicker id="dateField" value="2025-05-20" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd" width="100%" editable="false"/>
-              <Label id="_IDGenLabel12" text="{i18n>Hour}"/>
+              <Label id="_IDGenLabel12" text="{i18n>Hours}"/>
               <Input id="inputHour" value="12345" width="100%" type="Number"/>
             </form:content>
           </form:SimpleForm>
@@ -178,7 +182,7 @@ UPDATE CODE
                   <columns>
                     <Column id="_IDGenColumn4"><Text id="_IDGenText11" text="ID"/></Column>
                     <Column id="_IDGenColumn5"><Text id="_IDGenText12" text="File Name"/></Column>
-                    <Column id="_IDGenColumn8" hAlign="End" width="6rem"><Text id="_IDGenText16" text="Action"/></Column>
+                    <Column id="_IDGenColumn8" hAlign="End" width="9rem"><Text id="_IDGenText16" text="Action"/></Column>
                   </columns>
                   <items>
                     <ColumnListItem id="_IDGenColumnListItem1">
@@ -212,6 +216,8 @@ UPDATE CODE
   </Page>
 </mvc:View>
 
+
+OLD CODE
 <mvc:View
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
