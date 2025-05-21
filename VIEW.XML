@@ -16,21 +16,43 @@ UPDATE CODE
       <uxap:headerTitle>
         <uxap:ObjectPageDynamicHeaderTitle id="ObjectPageDynamicHeaderTitle">
           <uxap:actions>
-          <HBox>
+            <!-- <HBox>
               <Text id="inputRefNumber" text="Reference Number : FY-2024-3850" width="100%" />
-          </HBox>
-           <HBox>
-            <Button id="btnSaveHeader" text="Save" icon="sap-icon://save" type="Accept" press="onSavePress"/>
-            <Button id="btnSubmitHeader" text="Submit" icon="sap-icon://accept" type="Accept" press="onSubmitPress"/>
-          </HBox>
+            </HBox>
+            <HBox>
+              <Button id="btnSaveHeader" text="Save" icon="sap-icon://save" type="Accept" press="onSavePress"/>
+              <Button id="btnSubmitHeader" text="Submit" icon="sap-icon://accept" type="Accept" press="onSubmitPress"/>
+            </HBox> -->
+              <HBox class="customhead">
+                        <HBox id="reqIdHeaderTxt">
+                        <Text id="inputRequestID" class="textfont" text="Reference Number : - FY-2024-3850" width="100%" />
+ 
+                        </HBox>
+                        <HBox id="saveButton">
+                            <Button
+                                id="SaveBtn"
+                                icon="sap-icon://save"
+                                text="{i18n>save}"
+                                visible="true"
+                                type="Accept"
+                                press="onSave" />
+                            <Button
+                                id="SubmitBtn"
+                                icon="sap-icon://accept"
+                                text="{i18n>submit}"
+                                visible="true"
+                                type="Accept"
+                                press="onSubmit"/>
+                            </HBox>
+                        </HBox>
           </uxap:actions>
         </uxap:ObjectPageDynamicHeaderTitle>
       </uxap:headerTitle>
 
       <uxap:headerContent>
-        <VBox id="_IDGenHBox1" justifyContent="Start">
+        <VBox id="Form" justifyContent="Start">
           <form:SimpleForm
-            id="SSimpleFormToolbar3"
+            id="SimpleForm"
             editable="true"
             layout="ColumnLayout"
             labelSpanXL="12"
@@ -42,58 +64,54 @@ UPDATE CODE
             adjustLabelSpan="false"
             class="sapUiSmallMarginBeginEnd">
             <form:content>
-              <!-- <core:Title id="_IDGenTitle22" class="noBoldLabel"/> -->
-              <Label id="_IDGenLabel1" text="{i18n>Location}"/>
+              <Label id="Location" text="{i18n>Location}"/>
               <ComboBox id="comboLocation" width="150%" selectedKey="ENV">
                 <items>
-                  <core:Item id="_IDGenItem" text="ENV" key="ENV"/>
-                  <core:Item id="_IDGenItem1" text="Other" key="Other"/>
+                  <core:Item id="Dropdown_ENV" text="ENV" key="ENV"/>
+                  <core:Item id="Dropdown_" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <Label id="_IDGenLabel2" text="{i18n>Budget Requirment}" class="noBoldLabel"/>
-              <Input id="inputBudget" value="2000" width="150%" type="Number" editable="false"/>
-              <Label id="_IDGenLabel3" text="{i18n>Implement Date}"/>
+              <Label id="BudgetReqirment" text="{i18n>Budget Requirment}" class="noBoldLabel"/>
+              <Input id="BudgetValue" value="2000" width="150%" type="Number" editable="false"/>
+              <Label id="Implementdate" text="{i18n>Implement Date}"/>
               <DatePicker id="dateImplement" value="2024-10-18" displayFormat="dd/MM/yyyy" valueFormat="yyyy-MM-dd" width="100%"/>
-    
-              <Label id="_IDGenLabel35" text="{i18n>Division}" class="noBoldLabel"/>
-              <ComboBox id="Division" width="100%" selectedKey="FD" editable="false">
+              <Label id="Divisionsection" text="{i18n>Division}" class="noBoldLabel"/>
+              <ComboBox id="division" width="100%" selectedKey="FD" editable="false">
                 <items>
-                  <core:Item id="_IDGenItem2" text="FD" key="FD"/>
-                  <core:Item id="_IDGenItem3" text="Other" key="Other"/>
+                  <core:Item id="Dropdown" text="FD" key="FD"/>
+                  <core:Item id="Dropdownother" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <Label id="_IDGenLabel5" text="{i18n>Project Name}" class="noBoldLabel"/>
+              <Label id="Projectname" text="{i18n>Project Name}" class="noBoldLabel"/>
               <Input id="inputProjectName" value="TEST 123" width="100%"/>
-              <Label id="_IDGenLabel6" text="{i18n>IRR}"/>
+              <Label id="IRR" text="{i18n>IRR}"/>
               <Input id="inputIRR" value="1234" width="100%" type="Number"/>
-              <!-- <core:Title id="_IDGenTitle3" class="noBoldLabel"/> -->
-              <Label id="_IDGenLabelDepartment" text="{i18n>Department}" class="noBoldLabel"/>
-              <ComboBox id="Department" width="100%" selectedKey="FD CDMM">
+              <Label id="Department" text="{i18n>Department}" class="noBoldLabel"/>
+              <ComboBox id="department" width="100%" selectedKey="FD CDMM">
                 <items>
-                  <core:Item id="_IDGenItem4" text="FD CDMM" key="FD CDMM"/>
-                  <core:Item id="_IDGenItem5" text="Other" key="Other"/>
+                  <core:Item id="_Dropdown_department" text="FD CDMM" key="FD CDMM"/>
+                  <core:Item id="Dropdown_Department" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <Label id="_IDGenLabel8" text="{i18n>Item Required}" class="noBoldLabel"/>
+              <Label id="Required" text="{i18n>Item Required}" class="noBoldLabel"/>
               <Input id="inputItemRequired" value="TEST DESCRIPTION" width="100%"/>
-              <Label id="_IDGenLabel9" text="{i18n>Market}"/>
+              <Label id="Market" text="{i18n>Market}"/>
               <ComboBox id="comboMarket" width="100%" selectedKey="Domestic (Dom)">
                 <items>
-                  <core:Item id="_IDGenItem6" text="Domestic (Dom)" key="Domestic (Dom)"/>
-                  <core:Item id="_IDGenItem7" text="Other" key="Other"/>
+                  <core:Item id="Market_dropdown" text="Domestic (Dom)" key="Domestic (Dom)"/>
+                  <core:Item id="marketDropdown" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <!-- <core:Title id="_IDGenTitle4" class="noBoldLabel"/> -->
-              <Label id="_IDGenLabelHod" text="{i18n>Hod}" class="noBoldLabel"/>
+              <Label id="HOD_SANCTION" text="{i18n>HOD}" class="noBoldLabel"/>
               <ComboBox id="Hod" width="100%" selectedKey="50914">
                 <items>
-                  <core:Item id="_IDGenItem8" text="50914 - E DHARANIKA - MIBS" key="50914"/>
-                  <core:Item id="_IDGenItem9" text="Other" key="Other"/>
+                  <core:Item id="HodDropdown" text="50914 - E DHARANIKA - MIBS" key="50914"/>
+                  <core:Item id="_HodDropdown" text="Other" key="Other"/>
                 </items>
               </ComboBox>
-              <Label id="_IDGenLabel11" text="{i18n>Date}"/>
+              <Label id="Date_SANCTION" text="{i18n>Date}"/>
               <DatePicker id="dateField" value="2025-05-20" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd" width="100%" editable="false"/>
-              <Label id="_IDGenLabel12" text="{i18n>Hours}"/>
+              <Label id="Hours" text="{i18n>Hours}"/>
               <Input id="inputHour" value="12345" width="100%" type="Number"/>
             </form:content>
           </form:SimpleForm>
@@ -107,15 +125,15 @@ UPDATE CODE
                 <HBox id="_IDGenHBox3" width="100%" justifyContent="SpaceBetween" wrap="Wrap">
                   <VBox id="_IDGenVBox1" width="30%" class="sapUiSmallMargin">
                     <Label id="_IDGenLabel13" text="{i18n>BackgroundCurrentScenario}" class="redLabel"/>
-                    <TextArea id="_IDGenTextArea" value="FOR TESTING" width="100%" rows="2" maxLength="1500"/>
+                    <TextArea id="_IDGenTextArea" value="{justificationModel>/background}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="2"/>
                   </VBox>
                   <VBox id="_IDGenVBox2" width="30%" class="sapUiSmallMargin">
                     <Label id="_IDGenLabel14" text="{i18n>ProposalJustification}" class="redLabel"/>
-                    <TextArea id="_IDGenTextArea1" value="FOR TESTING 123" width="100%" rows="2" maxLength="1500"/>
+                    <TextArea id="_IDGenTextArea1" value="{justificationModel>/justification}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="2"/>
                   </VBox>
                   <VBox id="_IDGenVBox3" width="30%" class="sapUiSmallMargin">
                     <Label id="_IDGenLabel15" text="{i18n>ExpectedOutcome}" class="redLabel"/>
-                    <TextArea id="_IDGenTextArea2" value="EXPECTED OUTCOME TEXT" width="100%" rows="2" maxLength="1500"/>
+                    <TextArea id="_IDGenTextArea2" value="{justificationModel>/expectedOutcome}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="2"/>
                   </VBox>
                 </HBox>
               </VBox>
@@ -153,7 +171,6 @@ UPDATE CODE
             </uxap:ObjectPageSubSection>
           </uxap:subSections>
         </uxap:ObjectPageSection>
-
         <uxap:ObjectPageSection id="_IDGenObjectPageSection2" title="Attachment">
           <uxap:subSections>
             <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection2">
@@ -164,7 +181,7 @@ UPDATE CODE
                       <Text id="_IDGenTextAttachmentCount" 
                             text="Attachments: {= ${UploadDocSrvTabData>/attachments}.length }" 
                             class="sapUiTinyMarginEnd"/>
-                            <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
+                      <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
                       <u:FileUploader id="fileUploaderTabAttchment"
                         fileType="jpg,png,pdf,docx,jpeg,csv,xlsx,eml"
                         multiple="true"
