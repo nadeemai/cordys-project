@@ -1,5 +1,4 @@
 UPDATE CODE 2
-
 <mvc:View
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m"
@@ -138,12 +137,8 @@ UPDATE CODE 2
             <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection1">
               <VBox id="_IDGenVBox4" class="sapUiSmallMargin">
               <VBox>
-        <!-- Subtitle -->
-        <Text text="(All values in ₹ Lacs.)" class="sectionSubtitle" />
-
-        <!-- Your section content here -->
-        <!-- Example: <Table items="{yourModel>/data}">...</Table> -->
-      </VBox>
+                <Text text="(All values in ₹ Lacs.)" class="sectionSubtitle" />
+              </VBox>
                 <Table id="_IDGenTable1" items="{budgetModel>/items}">
                   <columns>
                     <Column id="_IDGenColumn"><Text id="_IDGenText3" text="NATURE OF BUDGET"/></Column>
@@ -198,7 +193,7 @@ UPDATE CODE 2
                   <columns>
                     <Column id="_IDGenColumn4"><Text id="_IDGenText11" text="ID"/></Column>
                     <Column id="_IDGenColumn5"><Text id="_IDGenText12" text="File Name"/></Column>
-                    <Column id="_IDGenColumn8"  width="9rem">
+                    <Column id="_IDGenColumn8" width="9rem">
                       <Text id="_IDGenText16" text="Action"/>
                     </Column>
                   </columns>
@@ -207,8 +202,8 @@ UPDATE CODE 2
                       <cells>
                         <Text id="_IDGenText17" text="{UploadDocSrvTabData>ID}"/>
                         <Text id="_IDGenText13" text="{UploadDocSrvTabData>fileName}"/>
-                        <HBox id="_IDGenHBox5" justifyContent="Start" width="100%">
-                          <Button id="_IDGenButton" icon="sap-icon://download" press="onDownloadTabAttachemnt" class="sapUiSmallMarginEnd">
+                        <HBox id="_IDGenHBox5" justifyContent="Start" width="100%" class="shiftLeft">
+                          <Button id="_IDGenButton" icon="sap-icon://download" press="onDownloadTabAttachemnt" class="sapUiTinyMarginEnd">
                             <customData>
                               <core:CustomData key="fileName" value="{UploadDocSrvTabData>fileName}"/>
                               <core:CustomData key="ID" value="{UploadDocSrvTabData>ID}"/>
