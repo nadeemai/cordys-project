@@ -1,3 +1,246 @@
+UPDATE CODE 2
+
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:layout="sap.ui.layout"
+  xmlns:form="sap.ui.layout.form"
+  xmlns:uxap="sap.uxap"
+  xmlns:u="sap.ui.unified"
+  controllerName="com.cordys.cordys.controller.cordys">
+
+  <Page id="SupplierRegistration" class="custom-scope" title="SPECIAL SANCTION FD" showNavButton="true" navButtonPress="onBackDashboardpage">
+    <uxap:ObjectPageLayout id="ObjectPageLayout" showTitleInHeaderContent="true" upperCaseAnchorBar="false" showHeaderContent="true" showFooter="true">
+      <uxap:headerTitle>
+        <uxap:ObjectPageDynamicHeaderTitle id="ObjectPageDynamicHeaderTitle">
+          <uxap:actions>
+              <HBox class="customhead">
+                        <HBox id="reqIdHeaderTxt">
+                        <Text id="inputRequestID" class="textfont" text="Reference Number :" width="100%" />
+ 
+                        </HBox>
+                        <HBox id="SaveButton">
+                            <Button
+                                id="SaveBtn"
+                                icon="sap-icon://save"
+                                text="{i18n>Save}"
+                                visible="true"
+                                type="Accept"
+                                press="onSave" />
+                            <Button
+                                id="SubmitBtn"
+                                icon="sap-icon://accept"
+                                text="{i18n>Submit}"
+                                visible="true"
+                                type="Accept"
+                                press="onSubmit"/>
+                            </HBox>
+                        </HBox>
+          </uxap:actions>
+        </uxap:ObjectPageDynamicHeaderTitle>
+      </uxap:headerTitle>
+
+      <uxap:headerContent>
+        <VBox id="Form" justifyContent="Start">
+          <form:SimpleForm
+            id="SimpleForm"
+            editable="true"
+            layout="ColumnLayout"
+            labelSpanXL="12"
+            labelSpanL="12"
+            labelSpanM="12"
+            columnsXL="4"
+            columnsL="4"
+            columnsM="1"
+            adjustLabelSpan="false"
+            class="sapUiSmallMarginBeginEnd">
+            <form:content>
+              <Label id="Location" text="{i18n>Location}"/>
+              <ComboBox id="comboLocation" width="150%" selectedKey="ENV" placeholder="Select Location" required="true">
+                <items>
+                  <core:Item id="Dropdown_ENV" text="ENV" key="ENV"/>
+                  <core:Item id="Dropdown_" text="Other" key="Other"/>
+                </items>
+              </ComboBox>
+              <Label id="Requirment" text="{i18n>Budget Requirment}" class="noBoldLabel"/>
+              <Input id="BudgetValue" value="2000" width="150%" type="Number" editable="false"/>
+              <Label id="ImplementationDate" text="{i18n>Implementation Date}"/>
+              <DatePicker id="dateImplement" value="2024-10-18" displayFormat="dd/MM/yyyy" valueFormat="yyyy-MM-dd" width="100%"/>
+              <Label id="Divisionsection" text="{i18n>Division}" class="noBoldLabel"/>
+              <ComboBox id="division" width="100%" selectedKey="FD" editable="false" placeholder="Select Division" required="true">
+                <items>
+                  <core:Item id="Dropdown" text="FD" key="FD"/>
+                  <core:Item id="Dropdownother" text="Other" key="Other"/>
+                </items>
+              </ComboBox>
+              <Label id="Projectname" text="{i18n>Project Name}" class="noBoldLabel"/>
+              <Input id="inputProjectName" value="TEST 123" width="100%"/>
+
+              <Label id="IRR" text="{i18n>IRR}"/>
+              <Input id="inputIRR" value="1234" width="100%" type="Number"/>
+              <Label id="Department" text="{i18n>PU/Department}" class="noBoldLabel"/>
+              <ComboBox id="department" width="100%" selectedKey="FD CDMM" placeholder="Select Department" required="true">
+                <items>
+                  <core:Item id="_Dropdown_department" text="FD CDMM" key="FD CDMM"/>
+                  <core:Item id="Dropdown_Department" text="Other" key="Other"/>
+                </items>
+              </ComboBox>
+              <Label id="Required" text="{i18n>Item Required/Description}" class="noBoldLabel"/>
+              <Input id="inputItemRequired" value="TEST DESCRIPTION" width="100%"/>
+              <Label id="Market" text="{i18n>Market}"/>
+              <ComboBox id="comboMarket" width="100%" selectedKey="Domestic (Dom)" required="true">
+                <items>
+                  <core:Item id="Market_dropdown" text="Domestic (Dom)" key="Domestic (Dom)"/>
+                  <core:Item id="marketDropdown" text="Other" key="Other"/>
+                </items>
+              </ComboBox>
+              <Label id="HOD_SANCTION" text="{i18n>HOD}" class="BoldLabel"/>
+              <ComboBox id="Hod" width="100%" selectedKey="50914" placeholder="Select HOD" required="true">
+                <items>
+                  <core:Item id="HodDropdown" text="50914 - E DHARANIKA - MIBS" key="50914"/>
+                  <core:Item id="_HodDropdown" text="Other" key="Other"/>
+                </items>
+              </ComboBox>
+              <Label id="Date_SANCTION" text="{i18n>Date}"/>
+              <DatePicker id="dateField" value="2025-05-20" displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd" width="100%" editable="false"/>
+              <Label id="Hours" text="{i18n>Hours}"/>
+              <Input id="inputHour" value="12345" width="100%" type="Number"/>
+            </form:content>
+          </form:SimpleForm>
+        </VBox>
+      </uxap:headerContent>
+      <uxap:sections>
+        <uxap:ObjectPageSection id="_IDGenObjectPageSection" title="{i18n>JustificationDetails}">
+          <uxap:subSections>
+            <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection">
+              <VBox id="_IDGenVBox" class="sapUiSmallMargin">
+                <HBox id="_IDGenHBox3" width="100%" justifyContent="SpaceBetween" wrap="Wrap">
+                  <VBox id="_IDGenVBox1" width="30%" class="sapUiSmallMargin">
+                    <Label id="_IDGenLabel13" text="{i18n>Background/CurrentScenario}" class="redLabel"/>
+                    <TextArea id="_IDGenTextArea" value="{justificationModel>/background}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="4" placeholder="Enter Background/Current Scenario"/>
+                  </VBox>
+                  <VBox id="_IDGenVBox2" width="30%" class="sapUiSmallMargin">
+                    <Label id="_IDGenLabel14" text="{i18n>Proposal/Justification}" class="redLabel"/>
+                    <TextArea id="_IDGenTextArea1" value="{justificationModel>/justification}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="4" placeholder="Enter Proposal/Justification"/>
+                  </VBox>
+                  <VBox id="_IDGenVBox3" width="30%" class="sapUiSmallMargin">
+                    <Label id="_IDGenLabel15" text="{i18n>Deliverables}" class="redLabel"/>
+                    <TextArea id="_IDGenTextArea2" value="{justificationModel>/Deliverable}" showExceededText="true" maxLength="1000" width="100%" valueState="None" valueLiveUpdate="true" liveChange="handleLiveChange" rows="4" placeholder="Enter Deliverables"/>
+                  </VBox>
+                </HBox>
+              </VBox>
+            </uxap:ObjectPageSubSection>
+          </uxap:subSections>
+        </uxap:ObjectPageSection>
+        <uxap:ObjectPageSection id="_IDGenObjectPageSection1" title="{i18n>BudgetDetail}">
+          <uxap:subSections>
+            <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection1">
+              <VBox id="_IDGenVBox4" class="sapUiSmallMargin">
+              <VBox>
+        <!-- Subtitle -->
+        <Text text="(All values in ₹ Lacs.)" class="sectionSubtitle" />
+
+        <!-- Your section content here -->
+        <!-- Example: <Table items="{yourModel>/data}">...</Table> -->
+      </VBox>
+                <Table id="_IDGenTable1" items="{budgetModel>/items}">
+                  <columns>
+                    <Column id="_IDGenColumn"><Text id="_IDGenText3" text="NATURE OF BUDGET"/></Column>
+                    <Column id="_IDGenColumn1"><Text id="_IDGenText4" text="BUDGET AMOUNT"/></Column>
+                    <Column id="_IDGenColumn2"><Text id="_IDGenText5" text="5% CONTINGENCY"/></Column>
+                    <Column id="_IDGenColumn3"><Text id="_IDGenText6" text="TOTAL"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="_IDGenColumnListItem">
+                      <cells>
+                        <Text id="_IDGenText7" text="{budgetModel>nature}"/>
+                        <Input id="_IDGenInput" 
+                               value="{budgetModel>amount}" 
+                               type="Number" 
+                               change="onBudgetAmountChange" 
+                               editable="{= ${budgetModel>nature} !== 'Total' }"/>
+                        <Text id="_IDGenText8" text="{budgetModel>contingency}"/>
+                        <Text id="_IDGenText9" text="{budgetModel>total}"/>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+                <!-- <Text id="_IDGenText10" text="All values in ₹ Lacs." class="sapUiTinyMarginTop" wrapping="true">
+                  <customData>
+                    <core:CustomData key="style" value="color: red;" writeToDom="true"/>
+                  </customData>
+                </Text> -->
+              </VBox>
+            </uxap:ObjectPageSubSection>
+          </uxap:subSections>
+        </uxap:ObjectPageSection>
+        <uxap:ObjectPageSection id="_IDGenObjectPageSection2" title="Attachment">
+          <uxap:subSections>
+            <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection2">
+              <VBox id="_IDGenVBox5" class="sapUiSmallMargin" width="100%">
+                <Table id="_IDGenTable2" items="{UploadDocSrvTabData>/attachments}">
+                  <headerToolbar>
+                    <OverflowToolbar id="_IDGenOverflowToolbar1">
+                      <Text id="_IDGenTextAttachmentCount" 
+                            text="Attachments: {= ${UploadDocSrvTabData>/attachments}.length }" 
+                            class="sapUiTinyMarginEnd"/>
+                      <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
+                      <u:FileUploader id="fileUploaderTabAttchment"
+                        fileType="jpg,png,pdf,docx,jpeg,csv,xlsx,eml"
+                        multiple="true"
+                        icon="sap-icon://upload"
+                        buttonText="Upload"
+                        buttonOnly="true"
+                        change="onUploadTabAttchmment"
+                        class="sapUiSmallMarginEnd">
+                        <u:customData>
+                          <core:CustomData key="parentType" value="Request" writeToDom="false"/>
+                        </u:customData>
+                      </u:FileUploader>
+                    </OverflowToolbar>
+                  </headerToolbar>
+                  <columns>
+                    <Column id="_IDGenColumn4"><Text id="_IDGenText11" text="ID"/></Column>
+                    <Column id="_IDGenColumn5"><Text id="_IDGenText12" text="File Name"/></Column>
+                    <Column id="_IDGenColumn8" hAlign="End" width="9rem"><Text id="_IDGenText16" text="Action"/></Column>
+                  </columns>
+                  <items>
+                    <ColumnListItem id="_IDGenColumnListItem1">
+                      <cells>
+                        <Text id="_IDGenText17" text="{UploadDocSrvTabData>ID}"/>
+                        <Text id="_IDGenText13" text="{UploadDocSrvTabData>fileName}"/>
+                        <HBox id="_IDGenHBox5" justifyContent="End" width="100%">
+                          <Button id="_IDGenButton" icon="sap-icon://download" press="onDownloadTabAttachemnt" class="sapUiSmallMarginEnd">
+                            <customData>
+                              <core:CustomData key="fileName" value="{UploadDocSrvTabData>fileName}"/>
+                              <core:CustomData key="ID" value="{UploadDocSrvTabData>ID}"/>
+                            </customData>
+                          </Button>
+                          <Button id="_IDGenButton1" icon="sap-icon://delete" press="onDeleteTabAttchment" visible="{UploadDocSrvTabData>deleteTabVisible}">
+                            <customData>
+                              <core:CustomData key="fileName" value="{UploadDocSrvTabData>fileName}"/>
+                              <core:CustomData key="ID" value="{UploadDocSrvTabData>ID}"/>
+                            </customData>
+                          </Button>
+                        </HBox>
+                      </cells>
+                    </ColumnListItem>
+                  </items>
+                </Table>
+                <!-- <Text id="_IDGenTextAttachmentNote" text="All values in ₹ Lacs." class="sapUiTinyMarginTop" wrapping="true">
+                  <customData>
+                    <core:CustomData key="style" value="color: red;" writeToDom="true"/>
+                  </customData>
+                </Text> -->
+              </VBox>
+            </uxap:ObjectPageSubSection>
+          </uxap:subSections>
+        </uxap:ObjectPageSection>
+      </uxap:sections>
+    </uxap:ObjectPageLayout>
+  </Page>
+</mvc:View>
 
 UPDATE CODE
 
