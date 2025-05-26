@@ -30,7 +30,6 @@ UPDATED CODE 4
                                     press="onSave" />
                                 <Button
                                     id="SubmitBtn"
-                                    icon="sap-icon://accept"
                                     text="{i18n>Submit}"
                                     visible="true"
                                     class="customBlueButton"
@@ -38,9 +37,8 @@ UPDATED CODE 4
                                     press="onSubmit"/>
                                 <Button
                                     id="CancelBtn"
-                                    icon="sap-icon://cancel"
                                     text="Cancel"
-                                    type="Reject"
+                                    type="Default"
                                     press="onCancel"
                                     class="sapUiTinyMarginBegin"/>
                             </HBox>
@@ -179,6 +177,12 @@ UPDATED CODE 4
                     <uxap:subSections>
                         <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection2">
                             <VBox id="_IDGenVBox5" class="sapUiSmallMargin" width="100%">
+                            <MessageStrip
+                                    id="_IDGenMessageStrip"
+                                    text="Note: Supported file types: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, GIF, EML. Maximum ALLOWED Size 5MB."
+                                    type="Information"
+                                    showIcon="true"
+                                    class="sapUiTinyMarginBottom"/>
                                 <Table id="_IDGenTable2" items="{UploadDocSrvTabData>/attachments}">
                                     <headerToolbar>
                                         <OverflowToolbar id="_IDGenOverflowToolbar1">
@@ -232,11 +236,11 @@ UPDATED CODE 4
                         </uxap:ObjectPageSubSection>
                     </uxap:subSections>
                 </uxap:ObjectPageSection>
-                <uxap:ObjectPageSection id="WorkflowHistorySection" title="Workflow History Detail">
+                <uxap:ObjectPageSection id="ApprovialHistory" title="Approvial History ">
                     <uxap:subSections>
                         <uxap:ObjectPageSubSection id="WorkflowHistorySubSection">
                             <VBox id="WorkflowHistoryVBox" class="sapUiSmallMargin">
-                                <suite:Timeline id="detailsTimeline" axisOrientation="Horizontal" enableScroll="true" content="{timelineModel>/timelineItems}">
+                                <suite:Timeline id="detailsTimeline" axisOrientation="Vertical" enableScroll="true" content="{timelineModel>/timelineItems}">
                                     <suite:TimelineItem
                                         dateTime="{timelineModel>dateTime}"
                                         title="{timelineModel>title}"
@@ -253,6 +257,8 @@ UPDATED CODE 4
         </uxap:ObjectPageLayout>
     </Page>
 </mvc:View>
+
+
 
 UPDATED CODE 3
 
