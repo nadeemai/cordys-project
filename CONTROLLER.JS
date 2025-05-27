@@ -270,10 +270,16 @@ sap.ui.define([
         },
 
         _sendPayload: function(oPayload) {
+            var that = this;
             var oModel = this.getOwnerComponent().getModel("approvalservicev2");
             oModel.create("/Requests", oPayload, {
                 success: function(oData) {
-                    MessageBox.success("Request submitted successfully!");
+                    MessageBox.success("Request submitted successfully!", {
+                        onClose: function() {
+                            // Navigate to DashboardUI after the MessageBox is closed
+                            that.onDashboardui();
+                        }
+                    });
                 },
                 error: function(oError) {
                     MessageToast.show("Error submitting request: " + oError.message);
@@ -313,19 +319,9 @@ sap.ui.define([
                             return;
                         }
 
-                        MessageBox.confirm(
-                            "Are you sure you want to submit with these remarks?\n\n" + sRemarks,
-                            {
-                                title: "Confirm Submission",
-                                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                                onClose: function(oAction) {
-                                    if (oAction === MessageBox.Action.YES) {
-                                        that._sendPayload(oPayload);
-                                        that._oRemarksDialog.close();
-                                    }
-                                }
-                            }
-                        );
+                        // Submit the payload directly without confirmation dialog
+                        that._sendPayload(oPayload);
+                        that._oRemarksDialog.close();
                     }
                 });
 
@@ -530,6 +526,8 @@ sap.ui.define([
         }
     });
 });
+
+
 
 UPDATED CODE 4
 
