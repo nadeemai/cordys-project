@@ -13,10 +13,10 @@ sap.ui.define([
             // Initialize budget data with 5% contingency
             var oBudgetData = {
                 items: [
-                    { nature: "Capital Budget", amount: 500, contingency: 25, total: 525 },
-                    { nature: "Revenue Budget", amount: 475, contingency: 23.75, total: 498.75 },
-                    { nature: "Personnel Cost", amount: 1000, contingency: 50, total: 1050 },
-                    { nature: "Total", amount: 1975, contingency: 98.75, total: 2073.75 }
+                    { nature: "Capital Budget", amount: 500, contingency: 0, total: 525 },
+                    { nature: "Revenue Budget", amount: 475, contingency: 0, total: 498.75 },
+                    { nature: "Personnel Cost", amount: 1000, contingency: 0, total: 1050 },
+                    { nature: "Total", amount: 1975, contingency: 0, total: 2073.75 }
                 ]
             };
             var oBudgetModel = new JSONModel(oBudgetData);
@@ -67,6 +67,90 @@ sap.ui.define([
 
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("Sanctionfd").attachPatternMatched(this._onRouteSanctionfdController, this);
+
+            // Attach event handlers for real-time validation
+            this._attachValidationHandlers();
+        },
+
+        _attachValidationHandlers: function() {
+            var oView = this.getView();
+            var that = this;
+
+            // ComboBox fields
+            var aComboBoxFields = ["division", "department_sensce", "Hod", "comboLocation_Senca", "comboMarket_Senca"];
+            aComboBoxFields.forEach(function(sId) {
+                var oControl = oView.byId(sId);
+                if (oControl) {
+                    oControl.attachChange(function(oEvent) {
+                        var sValue = oEvent.getSource().getSelectedKey();
+                        if (sValue) {
+                            oControl.setValueState("None");
+                            oControl.setValueStateText("");
+                        } else {
+                            oControl.setValueState("Error");
+                            oControl.setValueStateText(that._getErrorMessage(sId));
+                        }
+                    });
+                }
+            });
+
+            // Input fields
+            var aInputFields = ["inputProjectName", "inputItemRequired", "BudgetValue"];
+            aInputFields.forEach(function(sId) {
+                var oControl = oView.byId(sId);
+                if (oControl) {
+                    oControl.attachLiveChange(function(oEvent) {
+                        var sValue = oEvent.getParameter("value");
+                        if (sId === "BudgetValue") {
+                            var fValue = parseFloat(sValue);
+                            if (fValue > 0 && !isNaN(fValue)) {
+                                oControl.setValueState("None");
+                                oControl.setValueStateText("");
+                            } else {
+                                oControl.setValueState("Error");
+                                oControl.setValueStateText("Valid Budget is required.");
+                            }
+                        } else if (sValue.trim()) {
+                            oControl.setValueState("None");
+                            oControl.setValueStateText("");
+                        } else {
+                            oControl.setValueState("Error");
+                            oControl.setValueStateText(that._getErrorMessage(sId));
+                        }
+                    });
+                }
+            });
+
+            // DatePicker field
+            var oDatePicker = oView.byId("dateImplement");
+            if (oDatePicker) {
+                oDatePicker.attachChange(function(oEvent) {
+                    var sValue = oEvent.getSource().getValue();
+                    if (sValue) {
+                        oDatePicker.setValueState("None");
+                        oDatePicker.setValueStateText("");
+                    } else {
+                        oDatePicker.setValueState("Error");
+                        oDatePicker.setValueStateText("Implementation Date is required.");
+                    }
+                });
+            }
+        },
+
+        _getErrorMessage: function(sId) {
+            var oMessages = {
+                "division": "Division is required.",
+                "department_sensce": "Department is required.",
+                "Hod": "HOD is required.",
+                "comboLocation_Senca": "Location is required.",
+                "comboMarket_Senca": "Market is required.",
+                "inputProjectName": "Project Name is required.",
+                "inputItemRequired": "Item Description is required.",
+                "BudgetValue": "Valid Budget is required.",
+                "dateImplement": "Implementation Date is required.",
+                "dynamicRemarksTextArea": "Remarks are required."
+            };
+            return oMessages[sId] || "This field is required.";
         },
 
         _onRouteSanctionfdController: function(oEvent) {
@@ -271,18 +355,54 @@ sap.ui.define([
 
         _validatePayload: function(oPayload) {
             var oSsfdDtl = oPayload.ssfdDtl;
-            return (
-                oSsfdDtl.division &&
-                oSsfdDtl.puDept &&
-                oSsfdDtl.hod &&
-                oSsfdDtl.loc &&
-                oSsfdDtl.projName &&
-                oSsfdDtl.itemRequiredDesc &&
-                oSsfdDtl.budgetRequired &&
-                oSsfdDtl.market &&
-                oSsfdDtl.implDt &&
-                oPayload.remarks
-            );
+            var oView = this.getView();
+            var aInvalidFields = [];
+
+            // Reset all fields to normal state
+            var aFields = [
+                { id: "division", type: "ComboBox" },
+                { id: "department_sensce", type: "ComboBox" },
+                { id: "Hod", type: "ComboBox" },
+                { id: "comboLocation_Senca", type: "ComboBox" },
+                { id: "inputProjectName", type: "Input" },
+                { id: "inputItemRequired", type: "Input" },
+                { id: "BudgetValue", type: "Input" },
+                { id: "comboMarket_Senca", type: "ComboBox" },
+                { id: "dateImplement", type: "DatePicker" }
+            ];
+
+            aFields.forEach(function(oField) {
+                var oControl = oView.byId(oField.id);
+                if (oControl) {
+                    oControl.setValueState("None");
+                    oControl.setValueStateText("");
+                }
+            });
+
+            // Validate mandatory fields
+            if (!oSsfdDtl.puDept) {
+                aInvalidFields.push({ id: "department_sensce", message: "Department is required." });
+            }
+            if (!oSsfdDtl.hod) {
+                aInvalidFields.push({ id: "Hod", message: "HOD is required." });
+            }
+            if (!oSsfdDtl.loc) {
+                aInvalidFields.push({ id: "comboLocation_Senca", message: "Location is required." });
+            }
+            if (!oSsfdDtl.market) {
+                aInvalidFields.push({ id: "comboMarket_Senca", message: "Market is required." });
+            }
+
+            // Highlight invalid fields
+            aInvalidFields.forEach(function(oField) {
+                var oControl = oView.byId(oField.id);
+                if (oControl) {
+                    oControl.setValueState("Error");
+                    oControl.setValueStateText(oField.message);
+                }
+            });
+
+            return aInvalidFields.length === 0;
         },
 
         _sendPayload: function(oPayload) {
@@ -318,6 +438,13 @@ sap.ui.define([
                     liveChange: function(oEvent) {
                         var sValue = oEvent.getParameter("value");
                         oSubmitBtn.setEnabled(!!sValue.trim());
+                        if (!sValue.trim()) {
+                            oTextArea.setValueState("Error");
+                            oTextArea.setValueStateText("Remarks are required.");
+                        } else {
+                            oTextArea.setValueState("None");
+                            oTextArea.setValueStateText("");
+                        }
                     }
                 });
 
@@ -364,6 +491,8 @@ sap.ui.define([
                     endButton: oCancelBtn,
                     afterClose: function() {
                         oTextArea.setValue("");
+                        oTextArea.setValueState("None");
+                        oTextArea.setValueStateText("");
                         oSubmitBtn.setEnabled(false);
                     }
                 });
@@ -394,7 +523,7 @@ sap.ui.define([
 
             // Calculate 5% contingency for non-total rows
             if (iIndex !== aItems.length - 1) {
-                aItems[iIndex].contingency = aItems[iIndex].amount * 0.5;
+                aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
                 aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
             }
 
