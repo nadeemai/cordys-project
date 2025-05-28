@@ -394,7 +394,7 @@ sap.ui.define([
 
             // Calculate 5% contingency for non-total rows
             if (iIndex !== aItems.length - 1) {
-                aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
+                aItems[iIndex].contingency = aItems[iIndex].amount * 0.5;
                 aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
             }
 
@@ -548,7 +548,6 @@ sap.ui.define([
         }
     });
 });
-
 
 
 UPDATE CODE 5
