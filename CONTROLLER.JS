@@ -1,5 +1,4 @@
 UPDATE CODE 6
-
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
@@ -13,9 +12,9 @@ sap.ui.define([
             // Initialize budget data with 5% contingency
             var oBudgetData = {
                 items: [
-                    { nature: "Capital Budget", amount: 500, contingency: 0, total: 525 },
-                    { nature: "Revenue Budget", amount: 475, contingency: 0, total: 498.75 },
-                    { nature: "Personnel Cost", amount: 1000, contingency: 0, total: 1050 },
+                    { nature: "Capital Budget", amount: 0, contingency: 0, total: 525 },
+                    { nature: "Revenue Budget", amount: 0, contingency: 0, total: 498.75 },
+                    { nature: "Personnel Cost", amount: 0, contingency: 0, total: 1050 },
                     { nature: "Total", amount: 1975, contingency: 0, total: 2073.75 }
                 ]
             };
@@ -137,21 +136,21 @@ sap.ui.define([
             }
         },
 
-        _getErrorMessage: function(sId) {
-            var oMessages = {
-                "division": "Division is required.",
-                "department_sensce": "Department is required.",
-                "Hod": "HOD is required.",
-                "comboLocation_Senca": "Location is required.",
-                "comboMarket_Senca": "Market is required.",
-                "inputProjectName": "Project Name is required.",
-                "inputItemRequired": "Item Description is required.",
-                "BudgetValue": "Valid Budget is required.",
-                "dateImplement": "Implementation Date is required.",
-                "dynamicRemarksTextArea": "Remarks are required."
-            };
-            return oMessages[sId] || "This field is required.";
-        },
+        // _getErrorMessage: function(sId) {
+        //     var oMessages = {
+        //         "division": "Division is required.",
+        //         "department_sensce": "Department is required.",
+        //         "Hod": "HOD is required.",
+        //         "comboLocation_Senca": "Location is required.",
+        //         "comboMarket_Senca": "Market is required.",
+        //         "inputProjectName": "Project Name is required.",
+        //         "inputItemRequired": "Item Description is required.",
+        //         "BudgetValue": "Valid Budget is required.",
+        //         "dateImplement": "Implementation Date is required.",
+        //         "dynamicRemarksTextArea": "Remarks are required."
+        //     };
+        //     return oMessages[sId] || "This field is required.";
+        // },
 
         _onRouteSanctionfdController: function(oEvent) {
             var oArgs = oEvent.getParameter("arguments");
@@ -381,16 +380,16 @@ sap.ui.define([
 
             // Validate mandatory fields
             if (!oSsfdDtl.puDept) {
-                aInvalidFields.push({ id: "department_sensce", message: "Department is required." });
+                aInvalidFields.push({ id: "department_sensce",  });
             }
             if (!oSsfdDtl.hod) {
-                aInvalidFields.push({ id: "Hod", message: "HOD is required." });
+                aInvalidFields.push({ id: "Hod",  });
             }
             if (!oSsfdDtl.loc) {
-                aInvalidFields.push({ id: "comboLocation_Senca", message: "Location is required." });
+                aInvalidFields.push({ id: "comboLocation_Senca", });
             }
             if (!oSsfdDtl.market) {
-                aInvalidFields.push({ id: "comboMarket_Senca", message: "Market is required." });
+                aInvalidFields.push({ id: "comboMarket_Senca", });
             }
 
             // Highlight invalid fields
@@ -523,7 +522,7 @@ sap.ui.define([
 
             // Calculate 5% contingency for non-total rows
             if (iIndex !== aItems.length - 1) {
-                aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
+                aItems[iIndex].contingency = aItems[iIndex].amount * 0.5;
                 aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
             }
 
@@ -677,6 +676,7 @@ sap.ui.define([
         }
     });
 });
+
 
 
 UPDATE CODE 5
