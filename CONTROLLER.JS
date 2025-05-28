@@ -10,13 +10,13 @@ sap.ui.define([
     "use strict";
     return Controller.extend("com.mmapprovalhub.approvalhub.controller.Sanctionfd", {
         onInit: function() {
-            // Initialize budget data
+            // Initialize budget data with 5% contingency
             var oBudgetData = {
                 items: [
                     { nature: "Capital Budget", amount: 500, contingency: 25, total: 525 },
-                    { nature: "Revenue Budget", amount: 475, contingency: 0, total: 475 },
-                    { nature: "Personnel Cost", amount: 1000, contingency: 0, total: 1000 },
-                    { nature: "Total", amount: 1975, contingency: 25, total: 2000 }
+                    { nature: "Revenue Budget", amount: 475, contingency: 23.75, total: 498.75 },
+                    { nature: "Personnel Cost", amount: 1000, contingency: 50, total: 1050 },
+                    { nature: "Total", amount: 1975, contingency: 98.75, total: 2073.75 }
                 ]
             };
             var oBudgetModel = new JSONModel(oBudgetData);
@@ -389,24 +389,32 @@ sap.ui.define([
             var iIndex = parseInt(oContext.getPath().split("/").pop());
             var aItems = oModel.getProperty("/items");
 
+            // Update the amount for the changed item
             aItems[iIndex].amount = parseFloat(sNewValue) || 0;
-            aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
 
+            // Calculate 5% contingency for non-total rows
             if (iIndex !== aItems.length - 1) {
-                var iTotalAmount = 0;
-                var iTotalContingency = 0;
-                for (var i = 0; i < aItems.length - 1; i++) {
-                    iTotalAmount += aItems[i].amount;
-                    iTotalContingency += aItems[i].contingency;
-                }
-                aItems[aItems.length - 1].amount = iTotalAmount;
-                aItems[aItems.length - 1].contingency = iTotalContingency;
-                aItems[aItems.length - 1].total = iTotalAmount + iTotalContingency;
-
-                this.getView().byId("BudgetValue").setValue(aItems[aItems.length - 1].total.toString());
+                aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
+                aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
             }
 
+            // Recalculate totals for the last row (Total)
+            var iTotalAmount = 0;
+            var iTotalContingency = 0;
+            for (var i = 0; i < aItems.length - 1; i++) {
+                iTotalAmount += aItems[i].amount;
+                iTotalContingency += aItems[i].contingency;
+            }
+            aItems[aItems.length - 1].amount = iTotalAmount;
+            aItems[aItems.length - 1].contingency = iTotalContingency;
+            aItems[aItems.length - 1].total = iTotalAmount + iTotalContingency;
+
+            // Update the BudgetValue field
+            this.getView().byId("BudgetValue").setValue(aItems[aItems.length - 1].total.toString());
+
+            // Update the model
             oModel.setProperty("/items", aItems);
+            oModel.refresh(true);
             // MessageToast.show("Budget amount updated!");
         },
 
@@ -540,6 +548,8 @@ sap.ui.define([
         }
     });
 });
+
+
 
 UPDATE CODE 5
 
