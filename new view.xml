@@ -76,7 +76,7 @@
     <core:ListItem    key="{SSLOCATIONDataFetch>description}"  text="{SSLOCATIONDataFetch>description}" />
 </ComboBox>
               <Label id="Requirment" text="{i18n>Budget Requirment}" class="noBoldLabel"/>
-              <Input id="BudgetValue" value="2000" width="150%" type="Number" editable="false"/>
+              <Input id="BudgetValue" value="" width="150%" type="Number" editable="false"/>
               <Label id="ImplementationDate" text="{i18n>Implementation Date}"/>
 <DatePicker 
   id="dateImplement" editable="{viewenableddatacheck>/enableRowActions}"
@@ -127,7 +127,7 @@
               </ComboBox>
               <Label id="Date_SANCTION" text="{i18n>Date}"/>
               <DatePicker id="dateField" value="2025-05-20"  displayFormat="dd-MM-yyyy" valueFormat="yyyy-MM-dd" width="100%" editable="false"/>
-              <Label id="Hours" text="{i18n>Hours}"/>
+              <Label id="Hours" text="{i18n>Hours}" required="true"/>
               <Input id="inputHour" editable="{viewenableddatacheck>/enableRowActions}" value="{Requestservicemodel>/ssfdDtl/enggHours}" width="100%" type="Number"/>
             </form:content>
           </form:SimpleForm>
