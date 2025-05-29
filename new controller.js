@@ -1,4 +1,1024 @@
-NEW CODE
+NEW CODE 2
+
+sap.ui.define([
+    "sap/ui/core/mvc/Controller",
+    "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
+    "sap/ui/core/Fragment",
+    "sap/m/MessageBox"
+    
+], function(Controller, JSONModel, MessageToast, Fragment, MessageBox) {
+    "use strict";
+    return Controller.extend("com.mmapprovalhub.approvalhub.controller.Sanctionfd", {
+        onInit: function() {
+           
+            var oBudgetData = {
+                items: [
+                    { nature: "Capital Budget", amount: 0, contingency: 0, total: 0 },
+                    { nature: "Revenue Budget", amount: 0, contingency: 0, total: 0 },
+                    { nature: "Personnel Cost", amount: 0, contingency: 0, total: 0 },
+                    { nature: "Total", amount: 0, contingency: 0, total: 0 }
+                ]
+            };
+            var oBudgetModel = new JSONModel(oBudgetData);
+            this.getView().setModel(oBudgetModel, "budgetModel");
+            var oAttachmentData = {
+                attachments: []
+            };
+            var oAttachmentModel = new JSONModel(oAttachmentData);
+            this.getView().setModel(oAttachmentModel, "UploadDocSrvTabData");
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.getRoute("Sanctionfd").attachPatternMatched(this._onRouteSanctionfdController, this); //proceed
+            oRouter.getRoute("SanctionfdRef").attachPatternMatched(this._onRouteSanctionfdwithRef, this); //Tab Nav
+            oRouter.getRoute("SanctionfdRefApproved").attachPatternMatched(this._onRouteSanctionfdApproved, this); //Approver
+
+            this.remarksDialog = sap.ui.xmlfragment("com/mmapprovalhub/approvalhub/Fragments/remarks", this);
+            this.getView().addDependent(this.remarksDialog);
+            var oViewModel = new sap.ui.model.json.JSONModel({
+				enableRowActions: true,
+                approvebuttonvisiblity: false
+			});
+			this.getView().setModel(oViewModel, "viewenableddatacheck");
+
+
+            var oTimelineData = {
+                timelineItems: [
+                    {
+                        dateTime: "7/22/2016 at 3:00 PM",
+                        title: "Ankit Pathak Created a Request",
+                        text: "Data Save",
+                        userName: "Ankit Pathak",
+                        userPicture: "https://ui-avatars.com/api/?name=Ankit+Rath"
+                    },
+                    {
+                        dateTime: "7/22/2016 at 6:00 PM",
+                        title: "Yugal Created a Request",
+                        text: "Data Submit",
+                        userName: "Yugal",
+                        userPicture: "https://ui-avatars.com/api/?name=Yugal"
+                    },
+                    {
+                        dateTime: "7/22/2016 at 3:00 PM",
+                        title: "Ayushi Mam added a note [Approved]",
+                        text: "Submitted.",
+                        userName: "Ayushi Mam",
+                        userPicture: "https://ui-avatars.com/api/?name=Ayushi"
+                    },
+                    {
+                        dateTime: "7/22/2016 at 3:00 PM",
+                        title: "Aakib Mohd added a note [Approved]",
+                        text: "Done.",
+                        userName: "Aakib Mohd",
+                        userPicture: "https://ui-avatars.com/api/?name=Aakib+Mohd"
+                    }
+                ]
+            };
+            var oTimelineModel = new JSONModel(oTimelineData);
+            this.getView().setModel(oTimelineModel, "timelineModel");
+
+        },
+        _onRouteSanctionfdApproved: function(oEvent) {
+            this._ApprovedCheck=""
+            var oArgs = oEvent.getParameter("arguments");
+            this._SanctionfdNameUI = oArgs.basedNameUISSFD;
+            var reqID = oArgs.reqID;
+            this._reqIDData = reqID;
+            
+            this._ApprovedCheck = oArgs.approved;
+                
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            var that = this;
+            oModelV2.read("/Requests", {
+                urlParameters: {
+                    "$filter": "reqID eq '" + reqID + "'",
+                    "$expand": "ssfdDtl"
+                },
+                success: function(oData) {
+                    if (oData && oData.results.length > 0) {
+                        let oRequestServiceModel = that.getOwnerComponent().getModel("Requestservicemodel");
+                        if (!oRequestServiceModel) {
+                            oRequestServiceModel = new sap.ui.model.json.JSONModel();
+                            that.getOwnerComponent().setModel(oRequestServiceModel, "Requestservicemodel");
+                        }
+                        oRequestServiceModel.setData(oData.results[0]);
+                        var statusDatacheck =  oData.results[0].status;
+                        that.statusData = oData.results[0].status;
+                        that.stagesData = oData.results[0].stage;
+
+                       if(statusDatacheck === "Draft" || statusDatacheck === "" || statusDatacheck === null){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+
+                       }else if(statusDatacheck === "Pending" || statusDatacheck === "Pending At HOD"){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+                       }else{
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+                       }
+
+                       if(that._ApprovedCheck === "Approved" && statusDatacheck === "Pending"){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", true);
+
+                       }else{
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+                       }
+                        that.onDepartmentDataFetch();
+                        that.onMarketDataFetch();
+                        that.onLocationDataFetch();
+                        that.onHODDataFetch();
+                        that.onFetchTimelinessData();
+                        that.onAttchmentDataFetch();
+                    } else {
+                        sap.m.MessageToast.show("No data found for Req ID: " + reqID);
+                    }
+                },
+                error: function(oError) {
+                    sap.m.MessageToast.show("Failed to load HOD data.");
+                }
+            });
+        },
+        _onRouteSanctionfdwithRef: function(oEvent) {
+            var oArgs = oEvent.getParameter("arguments");
+            this._SanctionfdNameUI = oArgs.basedNameUISSFD;
+            var reqID = oArgs.reqID;
+            this._reqIDData = reqID;
+            this._ApprovedCheck=""
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            var that = this;
+            oModelV2.read("/Requests", {
+                urlParameters: {
+                    "$filter": "reqID eq '" + reqID + "'",
+                    "$expand": "ssfdDtl"
+                },
+                success: function(oData) {
+                    if (oData && oData.results.length > 0) {
+                        let oRequestServiceModel = that.getOwnerComponent().getModel("Requestservicemodel");
+                        if (!oRequestServiceModel) {
+                            oRequestServiceModel = new sap.ui.model.json.JSONModel();
+                            that.getOwnerComponent().setModel(oRequestServiceModel, "Requestservicemodel");
+                        }
+                        oRequestServiceModel.setData(oData.results[0]);
+                        var statusDatacheck =  oData.results[0].status;
+                        that.statusData = oData.results[0].status;
+                       if(statusDatacheck === "Draft" || statusDatacheck === "" || statusDatacheck === null){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", true);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+
+                       }else if(statusDatacheck === "Pending" || statusDatacheck === "Pending At HOD"){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+                       }else if(statusDatacheck === "Approved"){
+                        that.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", false);
+                        that.getView().getModel("viewenableddatacheck").setProperty("/approvebuttonvisiblity", false);
+
+                       }
+                        that.onDepartmentDataFetch();
+                        that.onMarketDataFetch();
+                        that.onLocationDataFetch();
+                        that.onHODDataFetch();
+                        that.onFetchTimelinessData();
+                        that.onAttchmentDataFetch();
+                    } else {
+                        sap.m.MessageToast.show("No data found for Req ID: " + reqID);
+                    }
+                },
+                error: function(oError) {
+                    sap.m.MessageToast.show("Failed to load HOD data.");
+                }
+            });
+        },   
+        onFetchTimelinessData: function () {
+            var reqid = this._reqIDData;
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+        
+            oModelV2.read("/ProcessLogs", {
+                filters: [
+                    new sap.ui.model.Filter("reqID", sap.ui.model.FilterOperator.EQ, reqid)
+                ],
+                success: function (oData) {
+                    if (oData && oData.results) {
+                        var oJSONModel =  new sap.ui.model.json.JSONModel(oData);
+                        oView.setModel(oJSONModel, "timelinesslogdata");
+                    }
+                },
+                error: function (oError) {
+                    sap.m.MessageToast.show("Failed to load attachment data.");
+                    console.error(oError);
+                }
+            });
+        },
+        onAttchmentDataFetch: function () {
+            var reqid = this._reqIDData;
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+        
+            oModelV2.read("/ReqAttachments", {
+                filters: [
+                    new sap.ui.model.Filter("reqID", sap.ui.model.FilterOperator.EQ, reqid)
+                ],
+                success: function (oData) {
+                    if (oData && oData.results) {
+                        var oJSONModel = new sap.ui.model.json.JSONModel({
+                            attachments: oData.results
+                        });
+                        oView.setModel(oJSONModel, "UploadDocSrvTabData");
+                    }
+                },
+                error: function (oError) {
+                    sap.m.MessageToast.show("Failed to load attachment data.");
+                    console.error(oError);
+                }
+            });
+        },   
+        _onRouteSanctionfdController: function(oEvent) {
+            var oArgs = oEvent.getParameter("arguments");
+            var basedNameUI = oArgs.basedNameUISSFD;
+            this._SanctionfdNameUI = basedNameUI;
+            this._reqIDData = "";
+            this._ApprovedCheck="";
+            this.getView().getModel("viewenableddatacheck").setProperty("/enableRowActions", true);
+
+            var oRequestServiceModel = this.getOwnerComponent().getModel("Requestservicemodel");
+            if (!oRequestServiceModel) {
+                oRequestServiceModel = new sap.ui.model.json.JSONModel();
+                this.getOwnerComponent().setModel(oRequestServiceModel, "Requestservicemodel");
+            }
+                var oEmptyData = {
+                reqID: "",
+                refNo: "",
+                requesterName: "",
+                department: "",
+                market: "",
+                location: "",
+                hod: "",
+                ssfdDtl: []  
+            };
+            oRequestServiceModel.setData(oEmptyData);
+            this.onDepartmentDataFetch(); //based filter
+            this.onMarketDataFetch();
+            this.onLocationDataFetch();
+            this.onHODDataFetch(); // direct binding
+        },        
+     
+        onHODDataFetch: function() {
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            oModelV2.read("/Approvers", {
+                success: function(oData) {
+                    if (oData) {
+                        var oJSONModel = new sap.ui.model.json.JSONModel(oData);
+                        oView.setModel(oJSONModel, "SSHODDatafetchsanc");
+                    }
+                },
+                error: function(oError) {
+                    sap.m.MessageToast.show("Failed to load HOD data.", oError);
+                }
+            });
+        },
+
+        onDepartmentDataFetch: function(){
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            oModelV2.read("/ControlValues", {
+                urlParameters: {
+                  "$filter": "category eq '" + "SS_DEPARTMENT" + "'"
+                },
+                success: function (oData) {
+                  if (oData) {
+                    var oJSONModel = new sap.ui.model.json.JSONModel(oData);
+                    oView.setModel(oJSONModel, "SSDEPARTMENTData");
+                  }
+                },
+                error: function (oError) {
+                  sap.m.MessageToast.show("Failed to load data.", oError);
+                }
+              });
+
+        },
+        onMarketDataFetch: function(){
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            oModelV2.read("/ControlValues", {
+                urlParameters: {
+                  "$filter": "category eq '" + "SS_MARKET" + "'"
+                },
+                success: function (oData) {
+                  if (oData) {
+                    var oJSONModel = new sap.ui.model.json.JSONModel(oData);
+                    oView.setModel(oJSONModel, "SSMARKETDataFetch");
+                  }
+                },
+                error: function (oError) {
+                  sap.m.MessageToast.show("Failed to load data.", oError);
+                }
+              });
+        },
+        onLocationDataFetch: function(){
+            var oView = this.getView();
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            oModelV2.read("/ControlValues", {
+                urlParameters: {
+                  "$filter": "category eq '" + "SS_LOCATION" + "'"
+                },
+                success: function (oData) {
+                  if (oData) {
+                    var oJSONModel = new sap.ui.model.json.JSONModel(oData);
+                    oView.setModel(oJSONModel, "SSLOCATIONDataFetch");
+                  }
+                },
+                error: function (oError) {
+                  sap.m.MessageToast.show("Failed to load data.", oError);
+                }
+              });
+        },
+        onDashboardui: function(){
+           var Approved =  this._ApprovedCheck;
+           if(Approved === "Approved"){
+            var oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("approverdashboard", {
+               
+            });
+           }else{
+            var Name = this._SanctionfdNameUI;
+            if(Name === "SSFD"){
+                var oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("DashboardUI", {
+                    Name: "SSFD"
+                });
+            }
+           }
+          
+        },
+        onBackDashboardpage: function() {
+            MessageToast.show("Navigating back to dashboard...");
+            // Example: this.getOwnerComponent().getRouter().navTo("dashboard");
+        },
+        // attachmentuploadFilesData: function(reqid) {
+        //     var oModelUploaddata = this.getView().getModel("UploadDocSrvTabData");
+        //     var aFilesToUpload = [];
+        //     var oModelAttachmnet = this.getOwnerComponent().getModel("approvalservicev2");
+
+        // },
+
+        attachmentuploadFilesData: function (reqid) {
+            var oModelTabdata = this.getView().getModel("UploadDocSrvTabData");
+            var aFilesData = oModelTabdata.getProperty("/attachments");
+            var aFilesToUpload = [];
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+        
+            if (aFilesData) {
+                aFilesData.forEach(function (file) {
+                    if (!file.fileName) return;
+        
+                    var fileCopy = Object.assign({}, file);
+                    delete fileCopy.ID;
+                    if (fileCopy.content && typeof fileCopy.content === "string" && fileCopy.content.includes(',')) {
+                        var base64Content = fileCopy.content.split(',')[1];
+                        aFilesToUpload.push({
+                            fileName: fileCopy.fileName,
+                            content: base64Content,
+                            mediaType: fileCopy.mimeType || "text/plain",
+                            reqID: reqid,
+                        });
+                    } else {
+                        // console.warn("Invalid file content for file:", fileCopy.fileName);
+                    }
+                });
+                aFilesToUpload.forEach(function (attachmentData) {
+                    oModel.create("/ReqAttachments", attachmentData, {
+                        success: function () {
+                        },
+                        error: function () {
+                        }
+                    });
+                });
+            }
+        },            
+        onSaveSanctionform: function() {
+            var oView = this.getView();
+            var aBudgetItems = oView.getModel("budgetModel").getProperty("/items");
+            var reqid = this._reqIDData;
+            var statusData =  this.statusData;
+            // var basedNameUISSFD = this._SanctionfdNameUI;
+            var satauscheckdata = "";
+            if(statusData === "" || statusData === null || statusData === undefined){
+                satauscheckdata = "Draft"
+            }else if(statusData === "Draft"){
+                satauscheckdata = "Draft"
+            }else if(statusData === "Pending"){
+                satauscheckdata = "Pending"
+            }
+            
+            var oSsfdDtl = {
+                division: oView.byId("division").getSelectedKey(),
+                puDept: oView.byId("department_sensce").getSelectedKey(),
+                hod: oView.byId("Hod_SanctionData").getSelectedKey(),
+                loc: oView.byId("comboLocation_Senca").getSelectedKey(),
+                projName: oView.byId("inputProjectName").getValue(),
+                itemRequiredDesc: oView.byId("inputItemRequired").getValue(),
+                budgetRequired: parseFloat(oView.byId("BudgetValue").getValue()) || 0,
+                irr: oView.byId("inputIRR").getValue(),
+                market: oView.byId("comboMarket_Senca").getSelectedKey(),
+                implDt: oView.byId("dateImplement").getDateValue(),
+                enggHours: oView.byId("inputHour").getValue(),
+                remarks: "",
+                background: oView.byId("_IDGenTextArea").getValue(),
+                justification: oView.byId("_IDGenTextArea1").getValue(),
+                deliverables: oView.byId("_IDGenTextArea2").getValue(),
+                capitalBudget: aBudgetItems.find(item => item.nature === "Capital Budget")?.amount || 0,
+                revenueBudget: aBudgetItems.find(item => item.nature === "Revenue Budget")?.amount || 0,
+                personnelCost: aBudgetItems.find(item => item.nature === "Personnel Cost")?.amount || 0,
+            };
+             var oSavePayload = {
+                stage: satauscheckdata,
+                status: satauscheckdata,
+                type: "SSFD",
+                remarks: "",
+                ssfdDtl: oSsfdDtl
+            };
+            var that = this;
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+            if(!this._reqIDData){
+                oModel.create("/Requests" , oSavePayload, {
+                    success: function(oData) {
+                        that._reqIDData =  oData.reqID;
+                    //    var reqID =  oData.refNo;
+                        if (oData) {
+                            var oComponent = that.getOwnerComponent();
+                            var oRequestServiceModel = oComponent.getModel("Requestservicemodel");
+                            if (!oRequestServiceModel) {
+                                oRequestServiceModel = new sap.ui.model.json.JSONModel();
+                                oComponent.setModel(oRequestServiceModel, "Requestservicemodel");
+                            }
+                            oRequestServiceModel.setData(oData);
+                        }
+                        // that.byId("inputRequestIDSanctionfdpage").setT();
+                        var reqid = oData.reqID
+                        that.attachmentuploadFilesData(reqid);
+                        MessageBox.success("Request saved successfully!");
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }else{
+                oModel.update("/Requests('" + reqid + "')", oSavePayload, {
+                    success: function(oData) {
+                        var reqid = oData.reqID
+                        that.attachmentuploadFilesData(reqid);
+                        MessageBox.success("Request Updated successfully!");
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }
+        },
+        onConfirmSave: function() {
+            var oView = this.getView();
+            var oFormData = {
+                referenceNumber: oView.byId("inputRefNumber").getValue(),
+                location: oView.byId("comboLocation").getSelectedKey(),
+                budget: oView.byId("inputBudget").getValue(),
+                implementDate: oView.byId("dateImplement").getValue(),
+                division: oView.byId("Division").getSelectedKey(),
+                projectName: oView.byId("inputProjectName").getValue(),
+                irr: oView.byId("inputIRR").getValue(),
+                department: oView.byId("Department").getSelectedKey(),
+                itemRequired: oView.byId("inputItemRequired").getValue(),
+                market: oView.byId("comboMarket").getSelectedKey(),
+                hod: oView.byId("Hod").getSelectedKey(),
+                date: oView.byId("dateField").getValue(),
+                hour: oView.byId("inputHour").getValue(),
+                background: oView.byId("_IDGenTextArea").getValue(),
+                justification: oView.byId("_IDGenTextArea1").getValue(),
+                expectedOutcome: oView.byId("_IDGenTextArea2").getValue(),
+                attachments: this.getView().getModel("UploadDocSrvTabData").getProperty("/attachments")
+            };
+            MessageToast.show("Form data and attachments saved: " + JSON.stringify(oFormData));
+            // Add actual save logic (e.g., OData service call) here
+            this._oSaveDialog.close();
+        },
+
+        onCancelSave: function() {
+            this._oSaveDialog.close();
+            MessageToast.show("Save action canceled.");
+        },
+        onSubmitSanctionform: function () {
+            var isValid = true;
+        
+            var location = this.getView().byId("comboLocation_Senca");
+            var department = this.getView().byId("department_sensce");
+            var market = this.getView().byId("comboMarket_Senca");
+            var hod = this.getView().byId("Hod_SanctionData");
+            location.setValueState("None");
+            department.setValueState("None");
+            market.setValueState("None");
+            hod.setValueState("None");
+        
+            if (!location.getValue()) {
+                location.setValueState("Error");
+                isValid = false;
+            }
+            if (!department.getValue()) {
+                department.setValueState("Error");
+                isValid = false;
+            }
+            if (!market.getValue()) {
+                market.setValueState("Error");
+                isValid = false;
+            }
+            if (!hod.getValue()) {
+                hod.setValueState("Error");
+                isValid = false;
+            }
+            if (!isValid) {
+                sap.m.MessageBox.error("Please fill all required fields.");
+                return;
+            }
+            sap.ui.getCore().byId("RemarkInput").setValue("");
+            this.remarksDialog.open();
+        },    
+        onHodSanctionChange: function(){
+            var hod = this.getView().byId("Hod_SanctionData");
+            hod.setValueState("None");
+        },
+        onDepartmentSanctionChange : function(){
+            var DepartmentSan = this.getView().byId("department_sensce");
+            DepartmentSan.setValueState("None");
+        }, 
+        onMarketSenca : function(){
+            var comboMarket_Senca = this.getView().byId("comboMarket_Senca");
+            comboMarket_Senca.setValueState("None");
+        }, 
+        onLocationSenca : function(){
+            var comboLocation_Senca = this.getView().byId("comboLocation_Senca");
+            comboLocation_Senca.setValueState("None");
+        }, 
+        onApprovedSanctionform: function(){
+            sap.ui.getCore().byId("RemarkInput").setValue("");
+            this.remarksDialog.open();
+        },
+        
+        onCloseReamrksFrag: function(){
+            this.remarksDialog.close();
+        },
+        onApprovedData: function(){
+            var oView = this.getView();
+            var reqid = this._reqIDData
+            var statusData =  this.statusData
+            var stagesData = this.stagesData
+            var satauscheckdata = ""
+            var stagescheckdata = ""
+            // if(statusData === ""){
+            //     satauscheckdata = "Draft"
+            // }else if(statusData === "Draft"){
+            //     satauscheckdata = "Draft"
+            // }else if(statusData === "Pending At HOD"){
+            //     satauscheckdata = "Approved"
+            // }
+            // if(stagesData === ""){
+            //     stagescheckdata = "Draft"
+            // }else if(stagesData === "Draft"){
+            //     stagescheckdata = "Draft"
+            // }else if(stagesData === "Pending"){
+            //     stagescheckdata = "Approved"
+            // }
+            var RemarkInput =  sap.ui.getCore().byId("RemarkInput").getValue();
+            if(RemarkInput === "") {
+                sap.m.MessageBox.information("Please provide a remark before submitting.");
+                return;
+            }
+            var aBudgetItems = oView.getModel("budgetModel").getProperty("/items");
+            var oSsfdDtl = {
+                division: oView.byId("division").getSelectedKey(),
+                puDept: oView.byId("department_sensce").getSelectedKey(),
+                hod: oView.byId("Hod_SanctionData").getSelectedKey(),
+                loc: oView.byId("comboLocation_Senca").getSelectedKey(),
+                projName: oView.byId("inputProjectName").getValue(),
+                itemRequiredDesc: oView.byId("inputItemRequired").getValue(),
+                budgetRequired: parseFloat(oView.byId("BudgetValue").getValue()) || 0,
+                irr: oView.byId("inputIRR").getValue(),
+                market: oView.byId("comboMarket_Senca").getSelectedKey(),
+                implDt: oView.byId("dateImplement").getDateValue(),
+                enggHours: oView.byId("inputHour").getValue(),
+                remarks: RemarkInput,
+                background: oView.byId("_IDGenTextArea").getValue(),
+                justification: oView.byId("_IDGenTextArea1").getValue(),
+                deliverables: oView.byId("_IDGenTextArea2").getValue(),
+                capitalBudget: aBudgetItems.find(item => item.nature === "Capital Budget")?.amount || 0,
+                revenueBudget: aBudgetItems.find(item => item.nature === "Revenue Budget")?.amount || 0,
+                personnelCost: aBudgetItems.find(item => item.nature === "Personnel Cost")?.amount || 0,
+            };
+            var oSubmitPayload = {
+                stage: "Approved",
+                status: "Approved",
+                type: "SSFD",
+                remarks: RemarkInput,
+                ssfdDtl: oSsfdDtl
+            };
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+            var that = this;
+            if(!this._reqIDData){
+                oModel.create("/Requests" , oSubmitPayload, {
+                    success: function(oData) {
+                        that._reqIDData =  oData.reqID;
+                        var reqid = oData.reqID
+                        // that.attachmentuploadFilesData(reqid);
+                        that.approverdatacehckApproved(reqid);
+                        // MessageBox.success("Request Approved Successfully!");
+                       
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }else{
+                oModel.update("/Requests('" + reqid + "')", oSubmitPayload, {
+                    success: function(oData) {
+                        // that.attachmentuploadFilesData(reqid);
+                        that.approverdatacehckApproved(reqid);
+                        // MessageBox.success("Request Approved successfully!");
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }
+        },
+        onSubmitReamrksData: function(){
+            var oView = this.getView();
+            var reqid = this._reqIDData
+            var statusData =  this.statusData
+            // var satauscheckdata = ""
+            // if(statusData === ""){
+            //     satauscheckdata = "Draft"
+            // }else if(statusData === "Draft"){
+            //     satauscheckdata = "Draft"
+            // }else if(statusData === "Pending"){
+            //     satauscheckdata = "Pending At HOD"
+            // }
+            var RemarkInput =  sap.ui.getCore().byId("RemarkInput").getValue();
+            if(RemarkInput === "") {
+                sap.m.MessageBox.information("Please provide a remark before submitting.");
+                return;
+            }
+            var aBudgetItems = oView.getModel("budgetModel").getProperty("/items");
+            var oSsfdDtl = {
+                division: oView.byId("division").getSelectedKey(),
+                puDept: oView.byId("department_sensce").getSelectedKey(),
+                hod: oView.byId("Hod_SanctionData").getSelectedKey(),
+                loc: oView.byId("comboLocation_Senca").getSelectedKey(),
+                projName: oView.byId("inputProjectName").getValue(),
+                itemRequiredDesc: oView.byId("inputItemRequired").getValue(),
+                budgetRequired: parseFloat(oView.byId("BudgetValue").getValue()) || 0,
+                irr: oView.byId("inputIRR").getValue(),
+                market: oView.byId("comboMarket_Senca").getSelectedKey(),
+                implDt: oView.byId("dateImplement").getDateValue(),
+                enggHours: oView.byId("inputHour").getValue(),
+                remarks: RemarkInput,
+                background: oView.byId("_IDGenTextArea").getValue(),
+                justification: oView.byId("_IDGenTextArea1").getValue(),
+                deliverables: oView.byId("_IDGenTextArea2").getValue(),
+                capitalBudget: aBudgetItems.find(item => item.nature === "Capital Budget")?.amount || 0,
+                revenueBudget: aBudgetItems.find(item => item.nature === "Revenue Budget")?.amount || 0,
+                personnelCost: aBudgetItems.find(item => item.nature === "Personnel Cost")?.amount || 0,
+            };
+            var oSubmitPayload = {
+                stage: "Pending",
+                status: "Pending At HOD",
+                type: "SSFD",
+                remarks: RemarkInput,
+                ssfdDtl: oSsfdDtl
+            };
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+            var that = this;
+            if(!this._reqIDData){
+                oModel.create("/Requests" , oSubmitPayload, {
+                    success: function(oData) {
+                        that._reqIDData =  oData.reqID;
+                        var reqid = oData.reqID
+                        that.attachmentuploadFilesData(reqid);
+                        that.approverdatacehck(reqid); // for approver service
+                        if (oData) {
+                            var oComponent = that.getOwnerComponent();
+                            var oRequestServiceModel = oComponent.getModel("Requestservicemodel");
+                            if (!oRequestServiceModel) {
+                                oRequestServiceModel = new sap.ui.model.json.JSONModel();
+                                oComponent.setModel(oRequestServiceModel, "Requestservicemodel");
+                            }
+                            oRequestServiceModel.setData(oData);
+                        }
+                        // MessageBox.success("Request Submitted successfully!");
+                       
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }else{
+                oModel.update("/Requests('" + reqid + "')", oSubmitPayload, {
+                    success: function(oData) {
+                        that.attachmentuploadFilesData(reqid);
+                        that.approverdatacehck(reqid);
+                        // MessageBox.success("Request Updated successfully!");
+                    },
+                    error: function(oError) {
+                        MessageToast.show("Error saving request: " + oError.message);
+                    }
+                });
+            }
+        },
+        approverdatacehckApproved: function(reqid){
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+            var RemarkInput =  sap.ui.getCore().byId("RemarkInput").getValue();
+            var oApprovedPayload = {
+                reqID: reqid,
+                action: "Approved",
+                remarks: RemarkInput
+            };
+            var that = this;
+            oModel.create("/SSFDApproval" , oApprovedPayload, {
+                success: function(oData) {
+                    MessageBox.success("Request Approved successfully!", {
+                        onClose: function() {
+                            var Approved = that._ApprovedCheck;
+                            if (Approved === "Approved") {
+                                var oRouter = that.getOwnerComponent().getRouter();
+                                oRouter.navTo("approverdashboard");
+                            }
+                        }
+                    });
+                },
+                error: function(oError) {
+                    // MessageToast.show("Error saving request: " + oError.message);
+                }
+            });
+        },
+        approverdatacehck: function(reqid){
+            var oModel = this.getOwnerComponent().getModel("approvalservicev2");
+            var RemarkInput =  sap.ui.getCore().byId("RemarkInput").getValue();
+            var oApprovedPayload = {
+                reqID: reqid,
+                action: "Submit",
+                remarks: RemarkInput
+            };
+            var that = this;
+            oModel.create("/SSFDApproval" , oApprovedPayload, {
+                success: function(oData) {
+                    MessageBox.success(oData.SSFDApproval.message, {
+                        onClose: function() {
+                            var Name = that._SanctionfdNameUI;
+                            if (Name === "SSFD") {
+                                var oRouter = that.getOwnerComponent().getRouter();
+                                oRouter.navTo("DashboardUI", {
+                                    Name: "SSFD"
+                                });
+                            }
+                        }
+                    });
+                },
+                error: function(oError) {
+                    // MessageToast.show("Error saving request: " + oError.message);
+                }
+            });
+
+        },
+        onBudgetAmountChange: function(oEvent) {
+            var oInput = oEvent.getSource();
+            var sNewValue = oEvent.getParameter("value");
+            var oModel = this.getView().getModel("budgetModel");
+            var sPath = oInput.getBinding("value").getPath();
+            var oContext = oInput.getBindingContext("budgetModel");
+            var iIndex = parseInt(oContext.getPath().split("/").pop());
+            var aItems = oModel.getProperty("/items");
+             aItems[iIndex].amount = parseFloat(sNewValue) || 0;
+             if (iIndex !== aItems.length - 1) {
+                aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
+                aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
+            }
+             var iTotalAmount = 0;
+            var iTotalContingency = 0;
+            for (var i = 0; i < aItems.length - 1; i++) {
+                iTotalAmount += aItems[i].amount;
+                iTotalContingency += aItems[i].contingency;
+            }
+            aItems[aItems.length - 1].amount = iTotalAmount;
+            aItems[aItems.length - 1].contingency = iTotalContingency;
+            aItems[aItems.length - 1].total = iTotalAmount + iTotalContingency;
+             this.getView().byId("BudgetValue").setValue(aItems[aItems.length - 1].total.toString());
+            oModel.setProperty("/items", aItems);
+            oModel.refresh(true);
+            // MessageToast.show("Budget amount updated!");
+        },
+
+        onUploadTabAttchmment: function(oEvent) {
+            var oFileUploader = oEvent.getSource();
+            var aFiles = oEvent.getParameter("files");
+            if (!aFiles || aFiles.length === 0) {
+                MessageToast.show("No files selected.");
+                return;
+            }
+            var oModel = this.getView().getModel("UploadDocSrvTabData");
+            var aAttachments = oModel.getProperty("/attachments") || [];
+            var sUploadedOn = new Date().toISOString().split("T")[0];
+            var that = this;
+            for (var i = 0; i < aFiles.length; i++) {
+                (function(file, index) {
+                    var oReader = new FileReader();
+                    oReader.onload = function(e) {
+                        var sBase64Data = e.target.result; 
+                        aAttachments.push({
+                            ID: new Date().getTime().toString() + index,
+                            fileName: file.name,
+                            mimeType: file.type,
+                            content: sBase64Data 
+                        });
+                        if (index === aFiles.length - 1) {
+                            oModel.setProperty("/attachments", aAttachments);
+                            oModel.refresh(true); 
+                            MessageToast.show("Files uploaded: " + aFiles.length);
+                            oFileUploader.setValue(""); 
+                        }
+                    };
+                    oReader.onerror = function() {
+                        MessageToast.show("Error reading file: " + file.name);
+                    };
+                    oReader.readAsDataURL(file); // Read file as base64
+                })(aFiles[i], i);
+            }
+        },
+
+        onUploadPress: function() {
+            var oFileUploader = this.byId("fileUploaderTabAttchment");
+            var aFiles = oFileUploader.getDomRef().files;
+
+            if (!aFiles || aFiles.length === 0) {
+                MessageToast.show("Please select at least one file first.");
+                return;
+            }
+
+            var oModel = this.getView().getModel("UploadDocSrvTabData");
+            var aAttachments = oModel.getProperty("/attachments") || [];
+            var sUploadedOn = new Date().toISOString().split("T")[0];
+            var that = this;
+
+            // Clear previous temporary selections
+            aAttachments = aAttachments.filter(function(item) {
+                return !item.temp;
+            });
+
+            for (var i = 0; i < aFiles.length; i++) {
+                (function(file, index) {
+                    var oReader = new FileReader();
+                    oReader.onload = function(e) {
+                        var sBase64Data = e.target.result;
+                        aAttachments.push({
+                            ID: new Date().getTime().toString() + index,
+                            fileName: file.name,
+                            uploadedBy: "Current User",
+                            uploadedOn: sUploadedOn,
+                            deleteTabVisible: true,
+                            content: sBase64Data
+                        });
+
+                        if (index === aFiles.length - 1) {
+                            oModel.setProperty("/attachments", aAttachments);
+                            oModel.refresh(true); // Force refresh to update bindings
+                            MessageToast.show("Uploaded " + aFiles.length + " file(s) successfully!");
+                            oFileUploader.setValue("");
+                        }
+                    };
+                    oReader.onerror = function() {
+                        MessageToast.show("Error reading file: " + file.name);
+                    };
+                    oReader.readAsDataURL(file);
+                })(aFiles[i], i);
+            }
+        },
+
+        onDownloadTabAttachemnt: function(oEvent) {
+            var oButton = oEvent.getSource();
+            var sID = oButton.getCustomData().find(function(oData) {
+                return oData.getKey() === "ID";
+            }).getValue();
+            var sFileName = oButton.getCustomData().find(function(oData) {
+                return oData.getKey() === "fileName";
+            }).getValue();
+        
+            var oModel = this.getView().getModel("UploadDocSrvTabData");
+            var aAttachments = oModel.getProperty("/attachments") || [];
+            var oAttachment = aAttachments.find(function(oItem) {
+                return oItem.ID === sID;
+            });
+        
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            var sPath = "/ReqAttachments(guid'" + sID + "')";
+        
+            var that = this;
+        
+            // Step 1: Read metadata from backend to get media_src
+            oModelV2.read(sPath, {
+                success: function(oData) {
+                    if (oData && oData.__metadata && oData.__metadata.media_src) {
+                        // Use <a download> for direct media stream download
+                        var oLink = document.createElement("a");
+                        oLink.href = oData.__metadata.media_src;
+                        oLink.download = sFileName;
+                        document.body.appendChild(oLink);
+                        oLink.click();
+                        document.body.removeChild(oLink);
+                        sap.m.MessageToast.show("Downloading file from server: " + sFileName);
+                    } else {
+                        // Fallback to local
+                        that._downloadLocalAttachment(oAttachment, sFileName);
+                    }
+                },
+                error: function() {
+                    // Fallback to local
+                    that._downloadLocalAttachment(oAttachment, sFileName);
+                }
+            });
+        },        
+        _downloadBase64File: function(sBase64Content, sFileName) {
+            try {
+                var sBase64Data = sBase64Content.split(',')[1];
+                var sMimeType = sBase64Content.split(';')[0].split(':')[1];
+                var byteCharacters = atob(sBase64Data);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var oBlob = new Blob([byteArray], { type: sMimeType });
+                var sUrl = URL.createObjectURL(oBlob);
+        
+                var oLink = document.createElement("a");
+                oLink.href = sUrl;
+                oLink.download = sFileName;
+                document.body.appendChild(oLink);
+                oLink.click();
+                document.body.removeChild(oLink);
+                URL.revokeObjectURL(sUrl);
+                sap.m.MessageToast.show("Downloading file: " + sFileName);
+            } catch (e) {
+                sap.m.MessageToast.show("Error downloading file: " + sFileName);
+            }
+        },
+        _downloadLocalAttachment: function(oAttachment, sFileName) {
+            if (!oAttachment || !oAttachment.content) {
+                sap.m.MessageToast.show("Local file content not found for: " + sFileName);
+                return;
+            }
+            this._downloadBase64File(oAttachment.content, sFileName);
+        },        
+        onDeleteTabAttchment: function(oEvent) {
+            var oButton = oEvent.getSource();
+            var oModel = this.getView().getModel("UploadDocSrvTabData");
+            var aAttachments = oModel.getProperty("/attachments");
+            var sID = oButton.getCustomData().find(function(oData) {
+                return oData.getKey() === "ID";
+            }).getValue();
+            var iIndex = aAttachments.findIndex(function(oItem) {
+                return oItem.ID === sID;
+            });
+            if (iIndex === -1) return;
+            var sFileName = aAttachments[iIndex].fileName;
+            var oAttachment = aAttachments[iIndex];
+            var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
+            var sPath = "/ReqAttachments(guid'" + sID + "')";
+            var that = this;
+            oModelV2.remove(sPath, {
+                success: function() {
+                    that._removeAttachmentFromLocalModel(oModel, aAttachments, iIndex, sFileName);
+                    sap.m.MessageToast.show("Deleted " + sFileName);
+                },
+                error: function() {
+                    that._removeAttachmentFromLocalModel(oModel, aAttachments, iIndex, sFileName);
+                    sap.m.MessageToast.show("Deleted  " + sFileName);
+                }
+            });
+        },
+            _removeAttachmentFromLocalModel: function(oModel, aAttachments, iIndex, sFileName) {
+            aAttachments.splice(iIndex, 1);
+            oModel.setProperty("/attachments", aAttachments);
+            oModel.refresh(true);
+        },        
+    });
+});
+
+
+
+NEW CODE 1
 
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
