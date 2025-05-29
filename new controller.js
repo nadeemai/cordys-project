@@ -720,15 +720,6 @@ sap.ui.define([
 });
 
 
-
-
-
-
-
-
-
-
-
 OLD CODE
 
 sap.ui.define([
