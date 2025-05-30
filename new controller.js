@@ -372,35 +372,37 @@ sap.ui.define([
         attachmentuploadFilesData: function (reqid) {
             var oModelTabdata = this.getView().getModel("UploadDocSrvTabData");
             var aFilesData = oModelTabdata.getProperty("/attachments");
+            var aFilesToUpload = [];
             var oModel = this.getOwnerComponent().getModel("approvalservicev2");
-       
+        
             if (aFilesData) {
                 aFilesData.forEach(function (file) {
-                    if (!file.fileName || file.uploaded) return;
-       
-                    if (file.content && typeof file.content === "string" && file.content.includes(',')) {
-                        var base64Content = file.content.split(',')[1];
-                        var payload = {
-                            fileName: file.fileName,
+                    if (!file.fileName) return;
+        
+                    var fileCopy = Object.assign({}, file);
+                    delete fileCopy.ID;
+                    if (fileCopy.content && typeof fileCopy.content === "string" && fileCopy.content.includes(',')) {
+                        var base64Content = fileCopy.content.split(',')[1];
+                        aFilesToUpload.push({
+                            fileName: fileCopy.fileName,
                             content: base64Content,
-                            mediaType: file.mimeType || "text/plain",
-                            reqID: reqid
-                        };
-       
-                        // Create attachment
-                        oModel.create("/ReqAttachments", payload, {
-                            success: function () {
-                                file.uploaded = true;
-                            },
-                            error: function () {
-                                MessageToast.show("Error uploading attachment: " + file.fileName);
-                            }
+                            mediaType: fileCopy.mimeType || "text/plain",
+                            reqID: reqid,
                         });
+                    } else {
+                        // console.warn("Invalid file content for file:", fileCopy.fileName);
                     }
                 });
+                aFilesToUpload.forEach(function (attachmentData) {
+                    oModel.create("/ReqAttachments", attachmentData, {
+                        success: function () {
+                        },
+                        error: function () {
+                        }
+                    });
+                });
             }
-        },      
-            
+        },            
         onSaveSanctionform: function() {
             var oView = this.getView();
             var aBudgetItems = oView.getModel("budgetModel").getProperty("/items");
@@ -689,7 +691,7 @@ sap.ui.define([
                 deliverables: oView.byId("_IDGenTextArea2").getValue(),
                 capitalBudget: aBudgetItems.find(item => item.nature === "Capital Budget")?.amount || 0,
                 // revenueBudget: aBudgetItems.find(item => item.nature === "Revenue Budget")?.amount || 0,
-                // personnelCost: aBudgetItems.find(item => item.nature === "Personnel Cost")?.amount || 0,
+                // // personnelCost: aBudgetItems.find(item => item.nature === "Personnel Cost")?.amount || 0,
             };
             var oSubmitPayload = {
                 stage: "Pending",
@@ -799,25 +801,35 @@ sap.ui.define([
             var oContext = oInput.getBindingContext("budgetModel");
             var iIndex = parseInt(oContext.getPath().split("/").pop());
             var aItems = oModel.getProperty("/items");
-             aItems[iIndex].amount = parseFloat(sNewValue) || 0;
-             if (iIndex !== aItems.length - 1) {
+            // Update the amount for the current item
+            aItems[iIndex].amount = parseFloat(sNewValue) || 0;
+            // Calculate contingency and total only for Capital Budget, not for Revenue Budget or Personnel Cost
+            if (aItems[iIndex].nature === "Capital Budget") {
                 aItems[iIndex].contingency = aItems[iIndex].amount * 0.05;
                 aItems[iIndex].total = aItems[iIndex].amount + aItems[iIndex].contingency;
+            } else {
+                // For Revenue Budget and Personnel Cost, contingency is 0
+                aItems[iIndex].contingency = 0;
+                aItems[iIndex].total = aItems[iIndex].amount;
             }
-             var iTotalAmount = 0;
+            // Calculate totals for the "Total" row
+            var iTotalAmount = 0;
             var iTotalContingency = 0;
             for (var i = 0; i < aItems.length - 1; i++) {
-                iTotalAmount += aItems[i].amount; 
+                iTotalAmount += aItems[i].amount;
                 iTotalContingency += aItems[i].contingency;
             }
 
             aItems[aItems.length - 1].amount = iTotalAmount;
             aItems[aItems.length - 1].contingency = iTotalContingency;
             aItems[aItems.length - 1].total = iTotalAmount + iTotalContingency;
-             this.getView().byId("BudgetValue").setValue(aItems[aItems.length - 1].total.toString());
+
+            // Update the BudgetValue input field
+            this.getView().byId("BudgetValue").setValue(aItems[aItems.length - 1].total.toString());
+
+            // Update the model and refresh
             oModel.setProperty("/items", aItems);
             oModel.refresh(true);
-            // MessageToast.show("Budget amount updated!");
         },
 
         onUploadTabAttchmment: function(oEvent) {
