@@ -228,10 +228,28 @@ sap.ui.define([
             var oModelV2 = this.getOwnerComponent().getModel("approvalservicev2");
             var that = this;
 
+            // First check if we have a valid reqID
+    if (!reqID || reqID === "REQ-FD-0001"){
+        // This is a new form or default case, initialize with empty values
+        var oBudgetData = {
+            items: [
+                { nature: "Capital Budget", amount: 0, contingency: 0, total: 0 },
+                { nature: "Revenue Budget", total: 0 },
+                { nature: "Personnel Cost", total: 0 },
+                { nature: "Total", amount: 0, contingency: 0, total: 0 }
+            ]
+        };
+        var oBudgetModel = oView.getModel("budgetModel") || new JSONModel(oBudgetData);
+        oBudgetModel.setData(oBudgetData);
+        oView.setModel(oBudgetModel, "budgetModel");
+        oView.byId("BudgetValue").setValue("0");
+        return;
+    }
+
             // Fetch the budget details for the given reqID
             oModelV2.read("/ReqFormFD('" + reqID + "')", {
                 success: function(oData) {
-                    if (!reqID || reqID === "REQ-FD-0001"){
+                    if (!reqID || reqID === "REQ-FD-0001")  {
                         var oBudgetData = {
                             items: [
                                 { 
@@ -1163,6 +1181,7 @@ sap.ui.define([
         }
     });
 });
+
 
 
 NEW CODE 
